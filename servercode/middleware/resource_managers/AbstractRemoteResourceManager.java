@@ -1,6 +1,6 @@
 package middleware.resource_managers;
 
-import ResInterface.ResourceManager;
+import ResInterface.BackendResourceManager;
 
 /**
  * Created by jpoisson on 2017-09-25.
@@ -12,5 +12,5 @@ public abstract class AbstractRemoteResourceManager {
         this.resourceManagerType = type;
     }
 
-    public abstract ResourceManager getResourceManager();
+    public abstract BackendResourceManager getResourceManager();
 }

@@ -1,6 +1,7 @@
 package middleware.resource_managers.impl;
 
 import ResImpl.Trace;
+import ResInterface.BackendResourceManager;
 import ResInterface.ResourceManager;
 import middleware.exceptions.MiddlewareBaseException;
 import middleware.resource_managers.AbstractRemoteResourceManager;
@@ -24,7 +25,7 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
     private String resourceManagerKey;
 
     private Registry RMIRegistry;
-    private ResourceManager proxyRMIInterface;
+    private BackendResourceManager proxyRMIInterface;
 
     public RMIResourceManagerServerImpl(String rmAddress) {
         super(RemoteResourceManagerImplementationTypes.RMI);
@@ -47,7 +48,7 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
     private void initializeRMIInterface() {
         try {
             this.RMIRegistry = LocateRegistry.getRegistry(this.registryHostname, this.registryPort);
-            this.proxyRMIInterface = (ResourceManager) this.RMIRegistry.lookup(this.resourceManagerKey);
+            this.proxyRMIInterface = (BackendResourceManager) this.RMIRegistry.lookup(this.resourceManagerKey);
             Trace.info(String.format("Connected to RMI Instance //%s:%d/%s", this.registryHostname, this.registryPort, this.resourceManagerKey));
         } catch (RemoteException | NotBoundException e) {
             throw new MiddlewareBaseException("Unable to initialize the RMI interface.", e);
@@ -55,7 +56,7 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
     }
 
     @Override
-    public ResourceManager getResourceManager() {
+    public BackendResourceManager getResourceManager() {
         return this.proxyRMIInterface;
     }
 }

@@ -2,10 +2,12 @@ package middleware;
 
 import ResImpl.Trace;
 import ResInterface.ResourceManager;
+import middleware.entities.CustomerReservations;
 import middleware.resource_managers.AbstractRemoteResourceManager;
 import middleware.resource_managers.ResourceManagerTypes;
 
 import java.rmi.RemoteException;
+import java.util.Hashtable;
 import java.util.Vector;
 
 /**
@@ -13,6 +15,8 @@ import java.util.Vector;
  */
 public class MiddlewareInterface implements ResourceManager {
     private MiddlewareServer middleware;
+    private Hashtable<Integer, CustomerReservations> customerReservations = new Hashtable<>();
+
 
     MiddlewareInterface(MiddlewareServer serverInstance) {
         this.middleware = serverInstance;
@@ -45,15 +49,9 @@ public class MiddlewareInterface implements ResourceManager {
     @Override
     public int newCustomer(int id) throws RemoteException {
         AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
-        int givenCustomerId = userRmManager.getResourceManager().newCustomer(id);
+        int givenCustomerId = userRmManager.getResourceManager().newCustomer(id); // create the customer first at the others rm
 
-        this.middleware.getAllRemoteResourceManager().stream().filter(x -> x != userRmManager).forEach(x -> {
-            try {
-                x.getResourceManager().newCustomer(id, givenCustomerId);
-            } catch (RemoteException e) {
-                Trace.error(e.getMessage());
-            }
-        });
+        this.customerReservations.put(givenCustomerId, new CustomerReservations());
 
         return givenCustomerId;
     }
@@ -61,15 +59,10 @@ public class MiddlewareInterface implements ResourceManager {
     @Override
     public boolean newCustomer(int id, int cid) throws RemoteException {
         AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
-        boolean newCustomerSuccess = userRmManager.getResourceManager().newCustomer(id, cid);
+        boolean newCustomerSuccess = userRmManager.getResourceManager().newCustomer(id, cid); // create the customer first at the others rm
+
         if(newCustomerSuccess) {
-            this.middleware.getAllRemoteResourceManager().stream().filter(x -> x != userRmManager).forEach(x -> {
-                try {
-                    x.getResourceManager().newCustomer(id, cid);
-                } catch (RemoteException e) {
-                    Trace.error(e.getMessage());
-                }
-            });
+            this.customerReservations.put(cid, new CustomerReservations());
         }
 
         return newCustomerSuccess;
@@ -103,14 +96,9 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean deleteCustomer(int id, int customer) throws RemoteException {
         AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
         boolean deleteCustomerSuccess = userRmManager.getResourceManager().deleteCustomer(id, customer);
+
         if(deleteCustomerSuccess) {
-            this.middleware.getAllRemoteResourceManager().stream().filter(x -> x != userRmManager).forEach(x -> {
-                try {
-                    x.getResourceManager().deleteCustomer(id, customer);
-                } catch (RemoteException e) {
-                    Trace.error(e.getMessage());
-                }
-            });
+            this.customerReservations.remove(customer);
         }
 
         return deleteCustomerSuccess;
@@ -142,10 +130,30 @@ public class MiddlewareInterface implements ResourceManager {
 
     @Override
     public String queryCustomerInfo(int id, int customer) throws RemoteException {
-        return this.middleware
+        String customerInfo = this.middleware
                 .getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS)
                 .getResourceManager()
                 .queryCustomerInfo(id, customer);
+
+        CustomerReservations reservations = this.customerReservations.get(customer);
+
+        StringBuilder billBuilder = new StringBuilder();
+        for(Integer flightId: reservations.getBookedFlights()) {
+            int flightPrice = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY).getResourceManager().queryFlightPrice(id, flightId);
+            billBuilder.append(String.format("- flight-%d $ %d", flightId, flightPrice)).append("\n");
+        }
+
+        for(String carLocation: reservations.getBookedCars()) {
+            int carPrice = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().queryCarsPrice(id, carLocation);
+            billBuilder.append(String.format("- car-%s $ %d", carLocation, carPrice)).append("\n");
+        }
+
+        for(String roomLocation: reservations.getBookedCars()) {
+            int roomPrice = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().queryRoomsPrice(id, roomLocation);
+            billBuilder.append(String.format("- car-%s $ %d", roomLocation, roomPrice)).append("\n");
+        }
+
+        return customerInfo + billBuilder.toString();
     }
 
     @Override
@@ -174,33 +182,65 @@ public class MiddlewareInterface implements ResourceManager {
 
     @Override
     public boolean reserveFlight(int id, int customer, int flightNumber) throws RemoteException {
-        return this.middleware
-                .getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY)
-                .getResourceManager()
-                .reserveFlight(id, customer, flightNumber);
+        String flightKey = "flight-" + flightNumber;
+        boolean reserveFlightSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY).getResourceManager().reserveItem(id, flightKey);
+
+        if(reserveFlightSuccess) {
+            CustomerReservations reservations = this.customerReservations.get(customer);
+            reservations.addBookedFlight(flightNumber);
+
+            this.customerReservations.put(customer, reservations);
+        }
+        return reserveFlightSuccess;
     }
 
     @Override
     public boolean reserveCar(int id, int customer, String location) throws RemoteException {
-        return this.middleware
-                .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
-                .getResourceManager()
-                .reserveCar(id, customer, location);
+        String carKey = "car-" + location;
+        boolean reserveCarSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().reserveItem(id, carKey);
+
+        if(reserveCarSuccess) {
+            CustomerReservations reservations = this.customerReservations.get(customer);
+            reservations.addBookedCar(location);
+
+            this.customerReservations.put(customer, reservations);
+        }
+        return reserveCarSuccess;
     }
 
     @Override
     public boolean reserveRoom(int id, int customer, String locationd) throws RemoteException {
-        return this.middleware
-                .getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY)
-                .getResourceManager()
-                .reserveRoom(id, customer, locationd);
+        String roomKey = "room-" + locationd;
+        boolean reserveRoomSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY).getResourceManager().reserveItem(id, roomKey);
+
+        if(reserveRoomSuccess) {
+            CustomerReservations reservations = this.customerReservations.get(customer);
+            reservations.addBookedRoom(locationd);
+
+            this.customerReservations.put(customer, reservations);
+        }
+        return reserveRoomSuccess;
     }
 
     @Override
-    public boolean itinerary(int id, int customer, Vector flightNumbers, String location, boolean Car, boolean Room) throws RemoteException {
-        return this.middleware
-                .getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS)
-                .getResourceManager()
-                .itinerary(id, customer, flightNumbers, location, Car, Room);
+    public boolean itinerary(int id, int customer, Vector flightNumbers, String location, boolean bookCar, boolean bookRoom) throws RemoteException {
+        // make sure to book the appropriate flights
+        for(Object flightNoObj: flightNumbers) {
+            Integer flightNo = Integer.parseInt((String) flightNoObj);
+            this.reserveFlight(id, customer, flightNo);
+        }
+
+        // make sure to book the appropriate cars
+        if(bookCar) {
+            this.reserveCar(id, customer, location);
+        }
+        // TODO : what should we do in case we are unable to reserve car or room, are we expected to rollback the flight reservations
+
+        // make sure to book the appropriate rooms
+        if(bookRoom) {
+            this.reserveRoom(id, customer, location);
+        }
+
+        return true;
     }
 }

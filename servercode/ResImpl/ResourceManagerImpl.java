@@ -14,7 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RMISecurityManager;
 
-public class ResourceManagerImpl implements ResourceManager 
+public class ResourceManagerImpl implements BackendResourceManager
 {
     
     protected RMHashtable m_itemHT = new RMHashtable();
@@ -40,7 +40,7 @@ public class ResourceManagerImpl implements ResourceManager
             // create a new Server object
             ResourceManagerImpl obj = new ResourceManagerImpl();
             // dynamically generate the stub (client proxy)
-            ResourceManager rm = (ResourceManager) UnicastRemoteObject.exportObject(obj, 0);
+            BackendResourceManager rm = (BackendResourceManager) UnicastRemoteObject.exportObject(obj, 0);
 
             // Bind the remote object's stub in the registry
             Registry registry = LocateRegistry.getRegistry(port);
@@ -472,6 +472,25 @@ public class ResourceManagerImpl implements ResourceManager
         throws RemoteException
     {
         return false;
+    }
+
+    @Override
+    public boolean reserveItem(int id, String key) throws RemoteException {
+        ReservableItem item = (ReservableItem)readData(id, key);
+        if ( item == null ) {
+            Trace.warn("RM::reserveItem( " + id + ", " + key+") failed--item doesn't exist" );
+            return false;
+        } else if (item.getCount()==0) {
+            Trace.warn("RM::reserveItem( " + id + ", " + key+") failed--No more items" );
+            return false;
+        } else {
+            // decrease the number of available items in the storage
+            item.setCount(item.getCount() - 1);
+            item.setReserved(item.getReserved()+1);
+
+            Trace.info("RM::reserveItem( " + id + ", " + key + ") succeeded" );
+            return true;
+        }
     }
 
 }
