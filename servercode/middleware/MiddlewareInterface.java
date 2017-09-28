@@ -15,8 +15,6 @@ import java.util.Vector;
  */
 public class MiddlewareInterface implements ResourceManager {
     private MiddlewareServer middleware;
-    private Hashtable<Integer, CustomerReservations> customerReservations = new Hashtable<>();
-
 
     MiddlewareInterface(MiddlewareServer serverInstance) {
         this.middleware = serverInstance;
@@ -51,7 +49,7 @@ public class MiddlewareInterface implements ResourceManager {
         AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
         int givenCustomerId = userRmManager.getResourceManager().newCustomer(id); // create the customer first at the others rm
 
-        this.customerReservations.put(givenCustomerId, new CustomerReservations());
+        MiddlewareCustomerDatabase.getInstance().createCustomer(id);
 
         return givenCustomerId;
     }
@@ -62,7 +60,7 @@ public class MiddlewareInterface implements ResourceManager {
         boolean newCustomerSuccess = userRmManager.getResourceManager().newCustomer(id, cid); // create the customer first at the others rm
 
         if(newCustomerSuccess) {
-            this.customerReservations.put(cid, new CustomerReservations());
+            MiddlewareCustomerDatabase.getInstance().createCustomer(id);
         }
 
         return newCustomerSuccess;
@@ -98,7 +96,7 @@ public class MiddlewareInterface implements ResourceManager {
         boolean deleteCustomerSuccess = userRmManager.getResourceManager().deleteCustomer(id, customer);
 
         if(deleteCustomerSuccess) {
-            this.customerReservations.remove(customer);
+            MiddlewareCustomerDatabase.getInstance().deleteCustomer(customer);
         }
 
         return deleteCustomerSuccess;
@@ -135,7 +133,7 @@ public class MiddlewareInterface implements ResourceManager {
                 .getResourceManager()
                 .queryCustomerInfo(id, customer);
 
-        CustomerReservations reservations = this.customerReservations.get(customer);
+        CustomerReservations reservations = MiddlewareCustomerDatabase.getInstance().getReservations(customer);
 
         StringBuilder billBuilder = new StringBuilder();
         for(Integer flightId: reservations.getBookedFlights()) {
@@ -185,12 +183,7 @@ public class MiddlewareInterface implements ResourceManager {
         String flightKey = "flight-" + flightNumber;
         boolean reserveFlightSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY).getResourceManager().reserveItem(id, flightKey);
 
-        if(reserveFlightSuccess) {
-            CustomerReservations reservations = this.customerReservations.get(customer);
-            reservations.addBookedFlight(flightNumber);
-
-            this.customerReservations.put(customer, reservations);
-        }
+        MiddlewareCustomerDatabase.getInstance().addReservedFlight(customer, flightNumber);
         return reserveFlightSuccess;
     }
 
@@ -199,12 +192,7 @@ public class MiddlewareInterface implements ResourceManager {
         String carKey = "car-" + location;
         boolean reserveCarSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().reserveItem(id, carKey);
 
-        if(reserveCarSuccess) {
-            CustomerReservations reservations = this.customerReservations.get(customer);
-            reservations.addBookedCar(location);
-
-            this.customerReservations.put(customer, reservations);
-        }
+        MiddlewareCustomerDatabase.getInstance().addReservedCar(customer, location);
         return reserveCarSuccess;
     }
 
@@ -213,12 +201,7 @@ public class MiddlewareInterface implements ResourceManager {
         String roomKey = "room-" + locationd;
         boolean reserveRoomSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY).getResourceManager().reserveItem(id, roomKey);
 
-        if(reserveRoomSuccess) {
-            CustomerReservations reservations = this.customerReservations.get(customer);
-            reservations.addBookedRoom(locationd);
-
-            this.customerReservations.put(customer, reservations);
-        }
+        MiddlewareCustomerDatabase.getInstance().addReservedRoom(customer, locationd);
         return reserveRoomSuccess;
     }
 
