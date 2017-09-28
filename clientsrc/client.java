@@ -14,6 +14,7 @@ public class client
 
     public static void main(String args[])
     {
+	String rmKey = "MyGroupResourceManager";
         client obj = new client();
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         String command = "";
@@ -40,7 +41,11 @@ public class client
         {
             port = Integer.parseInt(args[1]);
         }
-        if (args.length > 2)
+	if (args.length > 2)
+	{
+	    rmKey = args[2];
+	}
+        if (args.length > 3)
         {
             System.out.println ("Usage: java client [rmihost [rmiport]]");
             System.exit(1);
@@ -51,7 +56,7 @@ public class client
             // get a reference to the rmiregistry
             Registry registry = LocateRegistry.getRegistry(server, port);
             // get the proxy and the remote reference by rmiregistry lookup
-            rm = (ResourceManager) registry.lookup("MyGroupResourceManager");
+            rm = (ResourceManager) registry.lookup(rmKey);
             if(rm!=null)
             {
                 System.out.println("Successful");

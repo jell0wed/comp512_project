@@ -1,5 +1,6 @@
 package middleware.resource_managers.impl;
 
+import ResImpl.Trace;
 import ResInterface.ResourceManager;
 import middleware.exceptions.MiddlewareBaseException;
 import middleware.resource_managers.AbstractRemoteResourceManager;
@@ -47,6 +48,7 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
         try {
             this.RMIRegistry = LocateRegistry.getRegistry(this.registryHostname, this.registryPort);
             this.proxyRMIInterface = (ResourceManager) this.RMIRegistry.lookup(this.resourceManagerKey);
+            Trace.info(String.format("Connected to RMI Instance //%s:%d/%s", this.registryHostname, this.registryPort, this.resourceManagerKey));
         } catch (RemoteException | NotBoundException e) {
             throw new MiddlewareBaseException("Unable to initialize the RMI interface.", e);
         }

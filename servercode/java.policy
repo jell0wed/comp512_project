@@ -1,5 +1,7 @@
-grant codeBase "file:PUT-THE-RIGHT-PATH-HERE" {
+grant codeBase "file:/Users/jpoisson/Desktop/comp512/servercode/" {
     permission java.security.AllPermission;
 };
 
-
+grant codeBase "file:/Users/jpoisson/Desktop/comp512/servercode/out/" {
+    permission java.security.AllPermission;
+};
