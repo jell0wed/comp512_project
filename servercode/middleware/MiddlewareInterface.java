@@ -1,13 +1,12 @@
 package middleware;
 
-import ResImpl.Trace;
 import ResInterface.ResourceManager;
 import middleware.entities.CustomerReservations;
+import middleware.impl.rmi.MiddlewareRMIServer;
 import middleware.resource_managers.AbstractRemoteResourceManager;
 import middleware.resource_managers.ResourceManagerTypes;
 
 import java.rmi.RemoteException;
-import java.util.Hashtable;
 import java.util.Vector;
 
 /**
@@ -16,7 +15,7 @@ import java.util.Vector;
 public class MiddlewareInterface implements ResourceManager {
     private MiddlewareServer middleware;
 
-    MiddlewareInterface(MiddlewareServer serverInstance) {
+    public MiddlewareInterface(MiddlewareServer serverInstance) {
         this.middleware = serverInstance;
     }
 
