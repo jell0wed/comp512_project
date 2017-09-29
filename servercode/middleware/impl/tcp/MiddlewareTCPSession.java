@@ -38,25 +38,30 @@ class MiddlewareTCPSession {
     }
 
     void listenSession() {
-        while(true) {
-            try {
-                Object requestObj = (MiddlewareBaseTCPRequest) this.objInStream.readObject();
-                MiddlewareBaseTCPRequest request = (MiddlewareBaseTCPRequest) requestObj;
+        try {
+            while(true) {
+                try {
+                    Object requestObj = (MiddlewareBaseTCPRequest) this.objInStream.readObject();
+                    MiddlewareBaseTCPRequest request = (MiddlewareBaseTCPRequest) requestObj;
 
-                if(request != null) {
-                    MiddlewareBaseTCPResponse response = request.executeRequest(this.server);
-                    this.objOutStream.writeObject(response);
-                } else {
-                    Trace.error("Received invalid object");
+                    if(request != null) {
+                        MiddlewareBaseTCPResponse response = request.executeRequest(this.server);
+                        this.objOutStream.writeObject(response);
+                    } else {
+                        Trace.error("Received invalid object");
+                    }
+                } catch(EOFException e) { // stream reached the end, close the connection
+                    break;
+                } catch (IOException e) {
+                    Trace.error("IOException while receiving object : " + e.getMessage());
+                    break;
+                } catch (ClassNotFoundException e) {
+                    Trace.error("Received invalid request from client");
+                    break;
                 }
-            } catch(EOFException e) { // stream reached the end, close the connection
-                this.server.deleteClientConnection(this.clientSock);
-                break;
-            } catch (IOException e) {
-                Trace.error("IOException while receiving object  ");
-            } catch (ClassNotFoundException e) {
-                Trace.error("Received invalid request from client");
             }
+        } finally {
+            this.server.deleteClientConnection(this.clientSock);
         }
     }
 }

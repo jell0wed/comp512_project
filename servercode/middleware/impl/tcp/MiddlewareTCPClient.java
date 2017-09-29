@@ -1,6 +1,8 @@
 package middleware.impl.tcp;
 
 import ResImpl.Trace;
+import middleware.impl.tcp.requests.MiddlewareBaseTCPRequest;
+import middleware.impl.tcp.requests.impl.AddCarRequest;
 import middleware.impl.tcp.requests.impl.AddFlightRequest;
 import middleware.impl.tcp.responses.MiddlewareBaseTCPResponse;
 
@@ -14,22 +16,35 @@ import java.net.Socket;
  * Created by jpoisson on 2017-09-28.
  */
 public class MiddlewareTCPClient {
+    static ObjectOutputStream objOut;
+    static ObjectInput objIn;
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Socket clientSock = new Socket("localhost", 8080);
-        ObjectOutputStream objOut = new ObjectOutputStream(clientSock.getOutputStream());
-        ObjectInput objIn = new ObjectInputStream(clientSock.getInputStream());
+        objOut = new ObjectOutputStream(clientSock.getOutputStream());
+        objIn = new ObjectInputStream(clientSock.getInputStream());
 
         Trace.info("Connected to localhost:8080");
+        MiddlewareBaseTCPResponse resp = null;
 
+        // add flight
         AddFlightRequest addFlightReq = new AddFlightRequest(10, 10, 100);
-        objOut.writeObject(addFlightReq);
+        resp = (MiddlewareBaseTCPResponse) send(addFlightReq);
+        Trace.info("Received response type = " + resp.type);
 
+        // add car
+        AddCarRequest addCarReq = new AddCarRequest("mtl", 2, 10);
+        resp = send(addCarReq);
+        Trace.info("Received response type = " + resp.type);
+
+    }
+
+    public static MiddlewareBaseTCPResponse send(MiddlewareBaseTCPRequest req) throws IOException, ClassNotFoundException {
+        objOut.writeObject(req);
         Object respObj = (MiddlewareBaseTCPResponse) objIn.readObject();
         if(respObj == null) {
             throw new RuntimeException("Invalid response from server");
         }
 
-        MiddlewareBaseTCPResponse resp = (MiddlewareBaseTCPResponse) respObj;
-        Trace.info("Received response type = " + resp.type);
+        return (MiddlewareBaseTCPResponse) respObj;
     }
 }
