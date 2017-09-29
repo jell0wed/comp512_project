@@ -2,8 +2,7 @@ package middleware.impl.tcp;
 
 import ResImpl.Trace;
 import middleware.impl.tcp.requests.MiddlewareBaseTCPRequest;
-import middleware.impl.tcp.requests.impl.AddCarRequest;
-import middleware.impl.tcp.requests.impl.AddFlightRequest;
+import middleware.impl.tcp.requests.impl.*;
 import middleware.impl.tcp.responses.MiddlewareBaseTCPResponse;
 
 import java.io.IOException;
@@ -29,13 +28,32 @@ public class MiddlewareTCPClient {
         // add flight
         AddFlightRequest addFlightReq = new AddFlightRequest(10, 10, 100);
         resp = (MiddlewareBaseTCPResponse) send(addFlightReq);
-        Trace.info("Received response type = " + resp.type);
+        Trace.info("(AddFlight) Received response type = " + resp.type);
 
         // add car
-        AddCarRequest addCarReq = new AddCarRequest("mtl", 2, 10);
+        AddCarsRequest addCarReq = new AddCarsRequest("mtl", 2, 10);
         resp = send(addCarReq);
-        Trace.info("Received response type = " + resp.type);
+        Trace.info("(AddCar) Received response type = " + resp.type);
 
+        // add room
+        AddRoomsRequest addRoomReq = new AddRoomsRequest("mtl", 2, 10);
+        resp = send(addRoomReq);
+        Trace.info("(AddRoom) Received response type " + resp.type);
+
+        // add customer
+        NewCustomerRequest newCustReq = new NewCustomerRequest();
+        resp = send(newCustReq);
+        Trace.info("(NewCustomer) Received response type " + resp.type);
+
+        // add customer with id
+        NewCustomerWithIdRequest newCustIdReq = new NewCustomerWithIdRequest(1010);
+        resp = send(newCustIdReq);
+        Trace.info("(NewCustomerWithId) Received response type " + resp.type);
+
+        // delete flight
+        DeleteFlightRequest delFlightReq = new DeleteFlightRequest(10);
+        resp = send(delFlightReq);
+        Trace.info("(DeleteFlight) Received response type " + resp.type);
     }
 
     public static MiddlewareBaseTCPResponse send(MiddlewareBaseTCPRequest req) throws IOException, ClassNotFoundException {

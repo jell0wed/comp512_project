@@ -6,5 +6,6 @@ package middleware.impl.tcp.responses;
 public enum MiddlewareTCPResponseTypes {
     VOID_RESPONSE,
     SUCCESS_FAILURE_RESPONSE,
-    EXCEPTION_RESPONSE
+    EXCEPTION_RESPONSE,
+    INTEGER_RESPONSE
 }

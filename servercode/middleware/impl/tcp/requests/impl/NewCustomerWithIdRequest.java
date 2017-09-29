@@ -12,22 +12,18 @@ import java.rmi.RemoteException;
 /**
  * Created by jpoisson on 2017-09-28.
  */
-public class AddFlightRequest extends MiddlewareBaseTCPRequest {
-    public final int flightNum;
-    public final int flightSeats;
-    public final int flightPrice;
+public class NewCustomerWithIdRequest extends MiddlewareBaseTCPRequest {
+    public final int requestedCustId;
 
-    public AddFlightRequest(int flightNum, int flightSeats, int flightPrice) {
-        super(MiddlewareTCPRequestTypes.ADD_FLIGHTS_REQUEST);
-        this.flightNum = flightNum;
-        this.flightSeats = flightSeats;
-        this.flightPrice = flightPrice;
+    public NewCustomerWithIdRequest(int cid) {
+        super(MiddlewareTCPRequestTypes.ADD_CUSTOMER_WITH_ID_REQUEST);
+        this.requestedCustId = cid;
     }
 
     @Override
     public MiddlewareBaseTCPResponse executeRequest(MiddlewareServer server) {
         try {
-            boolean success = server.getMiddlewareInterface().addFlight(this.id, this.flightNum, this.flightSeats, this.flightSeats);
+            boolean success = server.getMiddlewareInterface().newCustomer(this.id, this.requestedCustId);
             return new SuccessFailureResponse(success);
         } catch (RemoteException e) {
             return new ExceptionResponse(e);

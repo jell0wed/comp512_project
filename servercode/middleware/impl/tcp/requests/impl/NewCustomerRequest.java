@@ -5,30 +5,23 @@ import middleware.impl.tcp.requests.MiddlewareBaseTCPRequest;
 import middleware.impl.tcp.requests.MiddlewareTCPRequestTypes;
 import middleware.impl.tcp.responses.MiddlewareBaseTCPResponse;
 import middleware.impl.tcp.responses.impl.ExceptionResponse;
-import middleware.impl.tcp.responses.impl.SuccessFailureResponse;
+import middleware.impl.tcp.responses.impl.IntegerResponse;
 
 import java.rmi.RemoteException;
 
 /**
  * Created by jpoisson on 2017-09-28.
  */
-public class AddCarRequest extends MiddlewareBaseTCPRequest {
-    public final String location;
-    public final int numCars;
-    public final int price;
-
-    public AddCarRequest(String loc, int numCars, int price) {
-        super(MiddlewareTCPRequestTypes.ADD_CAR_REQUEST);
-        this.location = loc;
-        this.numCars = numCars;
-        this.price = price;
+public class NewCustomerRequest extends MiddlewareBaseTCPRequest {
+    public NewCustomerRequest() {
+        super(MiddlewareTCPRequestTypes.ADD_CUSTOMER_REQUEST);
     }
 
     @Override
     public MiddlewareBaseTCPResponse executeRequest(MiddlewareServer server) {
         try {
-            boolean success = server.getMiddlewareInterface().addCars(this.id, this.location, this.numCars, this.price);
-            return new SuccessFailureResponse(success);
+            int cid = server.getMiddlewareInterface().newCustomer(this.id);
+            return new IntegerResponse(cid);
         } catch (RemoteException e) {
             return new ExceptionResponse(e);
         }
