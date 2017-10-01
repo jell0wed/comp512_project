@@ -48,7 +48,7 @@ public class MiddlewareInterface implements ResourceManager {
         AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
         int givenCustomerId = userRmManager.getResourceManager().newCustomer(id); // create the customer first at the others rm
 
-        MiddlewareCustomerDatabase.getInstance().createCustomer(id);
+        MiddlewareCustomerDatabase.getInstance().createCustomer(givenCustomerId);
 
         return givenCustomerId;
     }
@@ -56,10 +56,10 @@ public class MiddlewareInterface implements ResourceManager {
     @Override
     public boolean newCustomer(int id, int cid) throws RemoteException {
         AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
-        boolean newCustomerSuccess = userRmManager.getResourceManager().newCustomer(id, cid); // create the customer first at the others rm
+        boolean newCustomerSuccess = userRmManager.getResourceManager().newCustomer(id, cid);
 
         if(newCustomerSuccess) {
-            MiddlewareCustomerDatabase.getInstance().createCustomer(id);
+            MiddlewareCustomerDatabase.getInstance().createCustomer(cid);
         }
 
         return newCustomerSuccess;
@@ -182,7 +182,9 @@ public class MiddlewareInterface implements ResourceManager {
         String flightKey = "flight-" + flightNumber;
         boolean reserveFlightSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY).getResourceManager().reserveItem(id, flightKey);
 
-        MiddlewareCustomerDatabase.getInstance().addReservedFlight(customer, flightNumber);
+        if(reserveFlightSuccess) {
+            MiddlewareCustomerDatabase.getInstance().addReservedFlight(customer, flightNumber);
+        }
         return reserveFlightSuccess;
     }
 
@@ -191,7 +193,9 @@ public class MiddlewareInterface implements ResourceManager {
         String carKey = "car-" + location;
         boolean reserveCarSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().reserveItem(id, carKey);
 
-        MiddlewareCustomerDatabase.getInstance().addReservedCar(customer, location);
+        if(reserveCarSuccess) {
+            MiddlewareCustomerDatabase.getInstance().addReservedCar(customer, location);
+        }
         return reserveCarSuccess;
     }
 
@@ -200,7 +204,9 @@ public class MiddlewareInterface implements ResourceManager {
         String roomKey = "room-" + locationd;
         boolean reserveRoomSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY).getResourceManager().reserveItem(id, roomKey);
 
-        MiddlewareCustomerDatabase.getInstance().addReservedRoom(customer, locationd);
+        if(reserveRoomSuccess) {
+            MiddlewareCustomerDatabase.getInstance().addReservedRoom(customer, locationd);
+        }
         return reserveRoomSuccess;
     }
 

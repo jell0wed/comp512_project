@@ -33,7 +33,7 @@ public class MiddlewareCustomerDatabase {
     }
 
     public CustomerReservations getReservations(int customerId) {
-        return this.customerReservations.get(customerId);
+        return this.customerReservations.getOrDefault(customerId, new CustomerReservations());
     }
 
     public synchronized void addReservedFlight(int customerId, int flightId) {
