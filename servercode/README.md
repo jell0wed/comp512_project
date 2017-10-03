@@ -3,7 +3,7 @@
 ### Setup
 
 1. Navigate to the source code root directory
-2. Execute `./gradlew compileJava` to compile the soruce code
+2. Execute `./gradlew clean compileJava` to compile the soruce code
 3. Navigate to the `./bin/` directory
 4. In the `java.policy` file make sure to put the correct path 
    ```
