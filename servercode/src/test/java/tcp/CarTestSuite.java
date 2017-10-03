@@ -1,5 +1,6 @@
 package tcp;
 
+import junit.framework.TestSuite;
 import middleware.impl.tcp.requests.impl.*;
 import middleware.impl.tcp.responses.MiddlewareBaseTCPResponse;
 import middleware.impl.tcp.responses.MiddlewareTCPResponseTypes;
@@ -17,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by jpoisson on 2017-10-01.
  */
-public class CarTestSuite {
+public class CarTestSuite extends TestSuite {
     @BeforeClass
     public static void initializeClient() throws IOException {
         TestUtils.initializeClientSock();
