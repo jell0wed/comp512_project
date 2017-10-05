@@ -3,8 +3,8 @@ package middleware.impl.tcp;
 
 import ResImpl.Trace;
 import middleware.exceptions.MiddlewareBaseException;
-import middleware.impl.tcp.requests.MiddlewareBaseTCPRequest;
-import middleware.impl.tcp.responses.MiddlewareBaseTCPResponse;
+import protocol.requests.BaseTCPRequest;
+import protocol.responses.BaseTCPResponse;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -42,11 +42,11 @@ class MiddlewareTCPSession {
         try {
             while(true) {
                 try {
-                    Object requestObj = (MiddlewareBaseTCPRequest) this.objInStream.readObject();
-                    MiddlewareBaseTCPRequest request = (MiddlewareBaseTCPRequest) requestObj;
+                    Object requestObj = (BaseTCPRequest) this.objInStream.readObject();
+                    BaseTCPRequest request = (BaseTCPRequest) requestObj;
 
                     if(request != null) {
-                        MiddlewareBaseTCPResponse response = request.executeRequest(this.server);
+                        BaseTCPResponse response = request.executeRequest(this.server.getMiddlewareInterface());
                         this.objOutStream.writeObject(response);
                     } else {
                         Trace.error("Received invalid object");

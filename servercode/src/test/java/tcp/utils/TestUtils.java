@@ -1,8 +1,8 @@
 package tcp.utils;
 
 import ResImpl.Trace;
-import middleware.impl.tcp.requests.MiddlewareBaseTCPRequest;
-import middleware.impl.tcp.responses.MiddlewareBaseTCPResponse;
+import protocol.requests.BaseTCPRequest;
+import protocol.responses.BaseTCPResponse;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -19,14 +19,14 @@ public class TestUtils {
     private static ObjectOutputStream objOut;
     private static ObjectInput objIn;
 
-    public static MiddlewareBaseTCPResponse send(MiddlewareBaseTCPRequest req) throws IOException, ClassNotFoundException {
+    public static BaseTCPResponse send(BaseTCPRequest req) throws IOException, ClassNotFoundException {
         objOut.writeObject(req);
-        Object respObj = (MiddlewareBaseTCPResponse) objIn.readObject();
+        Object respObj = (BaseTCPResponse) objIn.readObject();
         if(respObj == null) {
             throw new RuntimeException("Invalid response from server");
         }
 
-        return (MiddlewareBaseTCPResponse) respObj;
+        return (BaseTCPResponse) respObj;
     }
 
     public static void initializeClientSock() throws IOException {

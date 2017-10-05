@@ -5,5 +5,5 @@ package middleware.resource_managers;
  */
 public enum RemoteResourceManagerImplementationTypes {
     RMI,
-    HTTP
+    TCP
 }

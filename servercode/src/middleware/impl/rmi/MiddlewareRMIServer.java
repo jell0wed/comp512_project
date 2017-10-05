@@ -5,6 +5,7 @@ import ResInterface.ResourceManager;
 import middleware.MiddlewareServer;
 import middleware.exceptions.MiddlewareBaseException;
 import middleware.resource_managers.RemoteResourceManagerFactory;
+import middleware.resource_managers.RemoteResourceManagerImplementationTypes;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -15,13 +16,12 @@ import java.rmi.server.UnicastRemoteObject;
  * Created by jpoisson on 2017-09-25.
  */
 public class MiddlewareRMIServer extends MiddlewareServer {
-    private static final RemoteResourceManagerFactory remoteRMFactory = new RemoteResourceManagerFactory();
     private static final String rmiServer = "localhost";
     private static final String rmiMiddlewareKey = "rmMiddleware";
     private static final int rmiPort = 1099;
 
     public MiddlewareRMIServer(String... availableRMs) {
-        super(availableRMs);
+        super(RemoteResourceManagerImplementationTypes.RMI, availableRMs);
     }
 
     @Override

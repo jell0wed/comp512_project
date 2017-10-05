@@ -3,6 +3,7 @@ package middleware.impl.tcp;
 import ResImpl.Trace;
 import middleware.MiddlewareServer;
 import middleware.exceptions.MiddlewareBaseException;
+import middleware.resource_managers.RemoteResourceManagerImplementationTypes;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -24,7 +25,7 @@ public class MiddlewareTCPServer extends MiddlewareServer {
     private ExecutorService clientSessions;
 
     public MiddlewareTCPServer(String... availableRMs) {
-        super(availableRMs);
+        super(RemoteResourceManagerImplementationTypes.TCP, availableRMs);
     }
 
     @Override
@@ -70,10 +71,10 @@ public class MiddlewareTCPServer extends MiddlewareServer {
 
     public static void main(String[] args) {
         MiddlewareTCPServer server = new MiddlewareTCPServer(
-                "//localhost:1099/rmCar",
-                "//localhost:1099/rmFlight",
-                "//localhost:1099/rmRoom",
-                "//localhost:1099/rmOther"
+                "//localhost:10001/rmCar",
+                "//localhost:10002/rmFlight",
+                "//localhost:10003/rmRoom",
+                "//localhost:10004/rmOther"
         );
     }
 }

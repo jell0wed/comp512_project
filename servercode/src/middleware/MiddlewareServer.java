@@ -3,6 +3,7 @@ package middleware;
 import middleware.exceptions.MiddlewareBaseException;
 import middleware.resource_managers.AbstractRemoteResourceManager;
 import middleware.resource_managers.RemoteResourceManagerFactory;
+import middleware.resource_managers.RemoteResourceManagerImplementationTypes;
 import middleware.resource_managers.ResourceManagerTypes;
 
 import java.util.Arrays;
@@ -14,7 +15,7 @@ import java.util.LinkedList;
  * Created by jpoisson on 2017-09-28.
  */
 public abstract class MiddlewareServer {
-    private static final RemoteResourceManagerFactory remoteRMFactory = new RemoteResourceManagerFactory();
+    private final RemoteResourceManagerFactory remoteRMFactory;
 
     private Collection<String> availableRMs;
     private Hashtable<ResourceManagerTypes, AbstractRemoteResourceManager> remoteResourceManagers;
@@ -22,7 +23,8 @@ public abstract class MiddlewareServer {
 
     protected abstract void initializeServer();
 
-    protected MiddlewareServer(String... availRMs) {
+    protected MiddlewareServer(RemoteResourceManagerImplementationTypes implType, String... availRMs) {
+        remoteRMFactory = new RemoteResourceManagerFactory(implType);
         this.availableRMs = Arrays.asList(availRMs);
         this.middlewareInterface = new MiddlewareInterface(this);
 

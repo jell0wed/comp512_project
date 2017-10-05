@@ -96,7 +96,7 @@ public class MiddlewareInterface implements ResourceManager {
         if(deleteCustomerSuccess) {
             MiddlewareCustomerDatabase.getInstance().deleteCustomer(customer);
         }
-
+        // TODO give res back
         return deleteCustomerSuccess;
     }
 
@@ -179,7 +179,7 @@ public class MiddlewareInterface implements ResourceManager {
     @Override
     public boolean reserveFlight(int id, int customer, int flightNumber) throws RemoteException {
         String flightKey = "flight-" + flightNumber;
-        boolean reserveFlightSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY).getResourceManager().reserveItem(id, flightKey);
+        boolean reserveFlightSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY).getResourceManager().updateReservedQuantities(id, flightKey, -1);
 
         if(reserveFlightSuccess) {
             MiddlewareCustomerDatabase.getInstance().addReservedFlight(customer, flightNumber);
@@ -190,7 +190,7 @@ public class MiddlewareInterface implements ResourceManager {
     @Override
     public boolean reserveCar(int id, int customer, String location) throws RemoteException {
         String carKey = "car-" + location;
-        boolean reserveCarSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().reserveItem(id, carKey);
+        boolean reserveCarSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().updateReservedQuantities(id, carKey, -1);
 
         if(reserveCarSuccess) {
             MiddlewareCustomerDatabase.getInstance().addReservedCar(customer, location);
@@ -201,7 +201,7 @@ public class MiddlewareInterface implements ResourceManager {
     @Override
     public boolean reserveRoom(int id, int customer, String locationd) throws RemoteException {
         String roomKey = "room-" + locationd;
-        boolean reserveRoomSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY).getResourceManager().reserveItem(id, roomKey);
+        boolean reserveRoomSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY).getResourceManager().updateReservedQuantities(id, roomKey, -1);
 
         if(reserveRoomSuccess) {
             MiddlewareCustomerDatabase.getInstance().addReservedRoom(customer, locationd);
@@ -211,6 +211,7 @@ public class MiddlewareInterface implements ResourceManager {
 
     @Override
     public boolean itinerary(int id, int customer, Vector flightNumbers, String location, boolean bookCar, boolean bookRoom) throws RemoteException {
+        // TODO: Check if every quantities are okay
         // make sure to book the appropriate flights
         for(Object flightNoObj: flightNumbers) {
             Integer flightNo = Integer.parseInt((String) flightNoObj);
@@ -229,5 +230,10 @@ public class MiddlewareInterface implements ResourceManager {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean updateReservedQuantities(int id, String key, int incQty) throws RemoteException {
+        return false;
     }
 }
