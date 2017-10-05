@@ -4,6 +4,7 @@ import ResInterface.ResourceManager;
 import middleware.entities.CustomerReservations;
 import middleware.resource_managers.AbstractRemoteResourceManager;
 import middleware.resource_managers.ResourceManagerTypes;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -66,6 +67,9 @@ public class MiddlewareInterface implements ResourceManager {
 
     @Override
     public boolean deleteFlight(int id, int flightNum) throws RemoteException {
+        // make sure to delete from reservations
+        MiddlewareCustomerDatabase.getInstance().deleteFlight(flightNum);
+
         return this.middleware
                 .getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY)
                 .getResourceManager()
@@ -74,6 +78,9 @@ public class MiddlewareInterface implements ResourceManager {
 
     @Override
     public boolean deleteCars(int id, String location) throws RemoteException {
+        // make sure to delete from reservations
+        MiddlewareCustomerDatabase.getInstance().deleteCar("car-" + location);
+
         return this.middleware
                 .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
                 .getResourceManager()
@@ -82,6 +89,9 @@ public class MiddlewareInterface implements ResourceManager {
 
     @Override
     public boolean deleteRooms(int id, String location) throws RemoteException {
+        // make sure to delete from reservations
+        MiddlewareCustomerDatabase.getInstance().deleteCar("room-" + location);
+
         return this.middleware
                 .getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY)
                 .getResourceManager()
@@ -94,9 +104,28 @@ public class MiddlewareInterface implements ResourceManager {
         boolean deleteCustomerSuccess = userRmManager.getResourceManager().deleteCustomer(id, customer);
 
         if(deleteCustomerSuccess) {
+            CustomerReservations custReservations = MiddlewareCustomerDatabase.getInstance().getReservations(customer);
+            // give back rooms
+            AbstractRemoteResourceManager roomRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY);
+            for(String roomKey: custReservations.getBookedRooms()) {
+                roomRmManager.getResourceManager().updateReservedQuantities(id, roomKey, 1);
+            }
+
+            // give back cars
+            AbstractRemoteResourceManager carRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY);
+            for(String carKey: custReservations.getBookedCars()) {
+                carRmManager.getResourceManager().updateReservedQuantities(id, carKey, 1);
+            }
+
+            // give back flights
+            AbstractRemoteResourceManager flightRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY);
+            for(Integer flightKey: custReservations.getBookedFlights()) {
+                flightRmManager.getResourceManager().updateReservedQuantities(id, "flight-" + String.valueOf(flightKey), 1);
+            }
+
             MiddlewareCustomerDatabase.getInstance().deleteCustomer(customer);
         }
-        // TODO give res back
+
         return deleteCustomerSuccess;
     }
 
@@ -211,21 +240,31 @@ public class MiddlewareInterface implements ResourceManager {
 
     @Override
     public boolean itinerary(int id, int customer, Vector flightNumbers, String location, boolean bookCar, boolean bookRoom) throws RemoteException {
-        // TODO: Check if every quantities are okay
         // make sure to book the appropriate flights
         for(Object flightNoObj: flightNumbers) {
             Integer flightNo = Integer.parseInt((String) flightNoObj);
+            if(this.queryFlight(id, flightNo) < 1) {
+                return false;
+            }
+
             this.reserveFlight(id, customer, flightNo);
         }
 
         // make sure to book the appropriate cars
         if(bookCar) {
+            if(this.queryCars(id, location) < 1) {
+                return false;
+            }
+
             this.reserveCar(id, customer, location);
         }
-        // TODO : what should we do in case we are unable to reserve car or room, are we expected to rollback the flight reservations
 
         // make sure to book the appropriate rooms
         if(bookRoom) {
+            if(this.queryRooms(id, location) < 1) {
+                return false;
+            }
+
             this.reserveRoom(id, customer, location);
         }
 
@@ -234,6 +273,6 @@ public class MiddlewareInterface implements ResourceManager {
 
     @Override
     public boolean updateReservedQuantities(int id, String key, int incQty) throws RemoteException {
-        return false;
+        throw new NotImplementedException(); // operation is not available from the middleware!!
     }
 }

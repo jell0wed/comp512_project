@@ -57,5 +57,26 @@ public class MiddlewareCustomerDatabase {
         this.customerReservations.put(customerId, reservations);
     }
 
+    public synchronized void deleteRoom(String key) {
+        for(int customerId: this.customerReservations.keySet()) {
+            CustomerReservations reservations = this.customerReservations.get(customerId);
+            reservations.removeRoom(key);
+        }
+    }
+
+    public synchronized void deleteCar(String key) {
+        for(int customerId: this.customerReservations.keySet()) {
+            CustomerReservations reservations = this.customerReservations.get(customerId);
+            reservations.removeCars(key);
+        }
+    }
+
+    public synchronized void deleteFlight(int no) {
+        for(int customerId: this.customerReservations.keySet()) {
+            CustomerReservations reservations = this.customerReservations.get(customerId);
+            reservations.removeFlight(no);
+        }
+    }
+
 
 }

@@ -34,4 +34,16 @@ public class CustomerReservations {
     public Collection<String> getBookedCars() {
         return bookedCars;
     }
+
+    public void removeRoom(String roomKey) {
+        this.bookedRooms.remove(roomKey);
+    }
+
+    public void removeFlight(int no) {
+        this.bookedFlights.remove(no);
+    }
+
+    public void removeCars(String carKey) {
+        this.bookedCars.remove(carKey);
+    }
 }
