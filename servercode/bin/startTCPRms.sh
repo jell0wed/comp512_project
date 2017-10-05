@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export CLASSPATH=/Users/jpoisson/Desktop/comp512/servercode/build/classes/main/
+export CLASSPATH=$(echo "$(pwd)/../out_gradle/")
 
 java ResImpl.ResourceManagerTCPImpl rmCar 10001 &
 java ResImpl.ResourceManagerTCPImpl rmFlight 10002 &

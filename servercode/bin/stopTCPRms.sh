@@ -1,3 +1,3 @@
 #!/bin/sh
 
-kill $(ps aux | grep 'rm' | awk '{print $2}')
+kill $(ps aux | grep 'Impl rm' | awk '{print $2}')

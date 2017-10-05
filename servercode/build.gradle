@@ -9,6 +9,7 @@ sourceSets {
     main {
         java {
             srcDirs = ['src']
+            outputDir = file('out_gradle/')
         }
         resources {
             srcDirs = ['src']
