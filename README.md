@@ -13,7 +13,15 @@
    ```
 5. Similarly, fix paths in files `startMiddleware.sh`, `startRms.sh`, `startRmiregistry.sh`
 
-### Usage on your local machine
+### Usage (TCP)
+1. Navigate to `<source code root dir>/servercode/` 
+2. Type in `./gradlew clean compileJava`
+3. Go to the `./bin/` directory
+4. Launch the RMs in the background `./startTCPRms.sh`
+5. Launch the middleware `./startTCPMiddleware.sh`
+6. Launch the interactive client `./startTCPClient.sh`
+
+### Usage on your local machine (RMI)
 
 1. Navigate to the `<source code root dir>/servercode/bin/` directory
 2. Start up the RMI Registry with the appropriate CLASSPATH using `./startRmiregistry.sh`
