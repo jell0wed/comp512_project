@@ -13,7 +13,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Vector;
 
-public class ResourceManagerRMIImpl implements ResourceManager, Remote {
+public class ResourceManagerRMIImpl implements ResourceManager {
     
     protected ResourceManagerDatabase rmDb = new ResourceManagerDatabase();
 
