@@ -16,8 +16,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
 public class ResourceManagerRMIImpl implements ResourceManager {
-
-    protected LockManager lockManager = new LockManager();
     protected ResourceManagerDatabase rmDb;
     private TransactionManager transManager = new TransactionManager();
 

@@ -1,18 +1,23 @@
 package middleware.transactions;
 
 import ResImpl.Trace;
+import ResImpl.exceptions.AbortedTransactionException;
+import ResImpl.exceptions.InvalidTransactionException;
 import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import middleware.MiddlewareServer;
 import middleware.resource_managers.ResourceManagerTypes;
 
 import java.rmi.RemoteException;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 
 public class DistributedTransactionManager {
     private volatile int transactionCounter = 0;
     private Map<Integer, DistributedTransaction> openTransactions = new Hashtable<Integer, DistributedTransaction>();
+    private Set<Integer> abortedTransactions = new HashSet<Integer>();
     private MiddlewareServer middleware;
 
     public DistributedTransactionManager(MiddlewareServer middlewareInstance) {
@@ -28,10 +33,14 @@ public class DistributedTransactionManager {
         return transId;
     }
 
-    public synchronized void commitTransaction(int transId) throws TransactionException {
+    public synchronized void commitTransaction(int transId) throws InvalidTransactionException, AbortedTransactionException {
         // commit on all enlisted resource managers
         if(!transactionExists(transId)) {
-            throw new TransactionException("Transaction does not exists.");
+            throw new InvalidTransactionException("Transaction does not exists.");
+        }
+
+        if(this.abortedTransactions.contains(transId)) {
+            throw new AbortedTransactionException("Transaction " + transId + " has been aborted.");
         }
 
         // make sure to commit on all resource managers
@@ -43,16 +52,15 @@ public class DistributedTransactionManager {
             try {
                 rm.commitTransaction(rmTransId);
             } catch (RemoteException e) {
-                // TODO : re-consider this?
                 Trace.error("Error while commiting transaction on " + rmType);
             }
         }
     }
 
-    public synchronized void abortTransaction(int transId) throws TransactionException {
+    public synchronized void abortTransaction(int transId) throws InvalidTransactionException {
         // abort all enlisted resource managers
         if(!transactionExists(transId)) {
-            throw new TransactionException("Transaction does not exists.");
+            throw new InvalidTransactionException("Transaction does not exists.");
         }
 
         // make sure to abort on all resource managers
@@ -64,15 +72,17 @@ public class DistributedTransactionManager {
             try {
                 rm.abortTransaction(rmTransId);
             } catch (RemoteException e) {
-                // TODO : re-consider this?
                 Trace.error("Error while aborting transaction on " + rmType);
             }
         }
+
+        this.abortedTransactions.add(transId);
+        this.openTransactions.remove(transId);
     }
 
     public synchronized int enlistResourceManager(int transId, ResourceManagerTypes rmType) throws TransactionException {
         if(!transactionExists(transId)) {
-            throw new TransactionException("Transaction does not exists.");
+            throw new InvalidTransactionException("Transaction does not exists.");
         }
 
         // make sure a transaction has been initialized for rmType
@@ -84,7 +94,7 @@ public class DistributedTransactionManager {
                 rmTransId = this.middleware.getRemoteResourceManagerForType(rmType).getResourceManager().startTransaction();
                 distTrans.enlistedRms.put(rmType, rmTransId);
             } catch (RemoteException e) {
-                throw new TransactionException("Unable to start new transactionat rm" + rmType);
+                Trace.error("Unable to start transaction on " + rmType);
             }
         } else {
             rmTransId = distTrans.enlistedRms.get(rmType);
@@ -94,9 +104,9 @@ public class DistributedTransactionManager {
         return rmTransId;
     }
 
-    public synchronized void ensureTransactionExists(int transId) throws TransactionException {
+    public synchronized void ensureTransactionExists(int transId) throws InvalidTransactionException {
         if(!transactionExists(transId)) {
-            throw new TransactionException("Transaction " + transId + " does not exists.");
+            throw new InvalidTransactionException("Transaction " + transId + " does not exists.");
         }
     }
 

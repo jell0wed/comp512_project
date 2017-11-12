@@ -55,11 +55,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MiddlewareRMIServer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/middleware/impl/rmi/MiddlewareRMIServer.java">
+      <file leaf-file-name="MiddlewareInterface.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareInterface.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="343">
-              <caret line="33" column="56" lean-forward="false" selection-start-line="33" selection-start-column="56" selection-end-line="33" selection-end-column="56" />
+            <state relative-caret-position="6885">
+              <caret line="470" column="51" lean-forward="false" selection-start-line="470" selection-start-column="51" selection-end-line="470" selection-end-column="51" />
               <folding />
             </state>
           </provider>
@@ -68,48 +68,11 @@
       <file leaf-file-name="DistributedTransactionManager.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1098">
-              <caret line="96" column="52" lean-forward="false" selection-start-line="96" selection-start-column="29" selection-end-line="96" selection-end-column="52" />
+            <state relative-caret-position="116">
+              <caret line="8" column="57" lean-forward="false" selection-start-line="8" selection-start-column="57" selection-end-line="8" selection-end-column="57" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#495#528#0" expanded="true" />
-                <element signature="e#652#653#0" expanded="true" />
-                <element signature="e#704#705#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MiddlewareServer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareServer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="63" column="40" lean-forward="false" selection-start-line="63" selection-start-column="40" selection-end-line="63" selection-end-column="40" />
-              <folding>
-                <element signature="e#2720#2721#0" expanded="true" />
-                <element signature="e#2767#2768#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MiddlewareInterface.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareInterface.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="158">
-              <caret line="407" column="56" lean-forward="true" selection-start-line="407" selection-start-column="56" selection-end-line="407" selection-end-column="56" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ResourceManagerRMIImpl.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="117">
-              <caret line="269" column="35" lean-forward="false" selection-start-line="269" selection-start-column="35" selection-end-line="269" selection-end-column="35" />
-              <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#653#686#0" expanded="true" />
+                <element signature="e#748#757#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -118,8 +81,8 @@
       <file leaf-file-name="ResourceManagerDatabase.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="417" column="19" lean-forward="false" selection-start-line="417" selection-start-column="19" selection-end-line="417" selection-end-column="19" />
+            <state relative-caret-position="157">
+              <caret line="38" column="30" lean-forward="false" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -133,6 +96,16 @@
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TransactionManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ResImpl/TransactionManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="658">
+              <caret line="81" column="50" lean-forward="false" selection-start-line="81" selection-start-column="50" selection-end-line="81" selection-end-column="50" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -152,6 +125,10 @@
       <find>ReadData</find>
       <find>m_itemHT</find>
       <find>DeadlockException</find>
+      <find>rmTransId</find>
+      <find>throw new</find>
+      <find>reserveItem</find>
+      <find>throw new</find>
     </findStrings>
     <replaceStrings>
       <replace>TransactionException</replace>
@@ -449,21 +426,23 @@
         <option value="$PROJECT_DIR$/src/ResImpl/exceptions/DeadlockException.java" />
         <option value="$PROJECT_DIR$/src/ResImpl/exceptions/TransactionException.java" />
         <option value="$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPImpl.java" />
-        <option value="$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java" />
         <option value="$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPClient.java" />
         <option value="$PROJECT_DIR$/src/ResInterface/ResourceManager.java" />
-        <option value="$PROJECT_DIR$/src/ResImpl/TransactionManager.java" />
         <option value="$PROJECT_DIR$/src/transactions/LockManager/LockManager.java" />
         <option value="$PROJECT_DIR$/src/clients/RMIClient.java" />
-        <option value="$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java" />
         <option value="$PROJECT_DIR$/src/middleware/MiddlewareTransactionManager.java" />
         <option value="$PROJECT_DIR$/src/middleware/MiddlewareTransaction.java" />
         <option value="$PROJECT_DIR$/src/middleware/DistributedTransactionManager.java" />
         <option value="$PROJECT_DIR$/src/middleware/DistributedTransaction.java" />
         <option value="$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java" />
         <option value="$PROJECT_DIR$/src/middleware/MiddlewareServer.java" />
-        <option value="$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java" />
+        <option value="$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java" />
         <option value="$PROJECT_DIR$/src/middleware/MiddlewareInterface.java" />
+        <option value="$PROJECT_DIR$/src/ResImpl/exceptions/InvalidTransactionException.java" />
+        <option value="$PROJECT_DIR$/src/ResImpl/exceptions/AbortedTransactionException.java" />
+        <option value="$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java" />
+        <option value="$PROJECT_DIR$/src/ResImpl/TransactionManager.java" />
+        <option value="$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java" />
       </list>
     </option>
   </component>
@@ -528,6 +507,13 @@
               <item name="servercode" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="ResImpl" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="servercode" type="b2602c69:ProjectViewProjectNode" />
+              <item name="servercode" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="ResImpl" type="462c0819:PsiDirectoryNode" />
+              <item name="exceptions" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -715,12 +701,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1510499118661</updated>
-      <workItem from="1510499119970" duration="13767000" />
+      <workItem from="1510499119970" duration="15014000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13767000" />
+    <option name="totallyTimeSpent" value="15014000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="873" extended-state="6" />
@@ -736,7 +722,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32904884" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32904884" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32904884" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -836,21 +822,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="337">
-          <caret line="284" column="21" lean-forward="false" selection-start-line="284" selection-start-column="21" selection-end-line="284" selection-end-column="21" />
-          <folding>
-            <element signature="e#8906#8907#0" expanded="true" />
-            <element signature="e#8934#8935#0" expanded="true" />
-            <element signature="e#9000#9001#0" expanded="true" />
-            <element signature="e#9028#9029#0" expanded="true" />
-            <marker date="1510504824000" expanded="false" signature="8814:8825" ph=" { " />
-            <marker date="1510504824000" expanded="false" signature="8834:8840" ph=" }" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="361">
@@ -900,24 +871,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ResImpl/TransactionManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="23" column="50" lean-forward="false" selection-start-line="23" selection-start-column="50" selection-end-line="23" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/middleware/impl/rmi/MiddlewareRMIServer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="343">
@@ -937,10 +890,69 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="284" column="21" lean-forward="false" selection-start-line="284" selection-start-column="21" selection-end-line="284" selection-end-column="21" />
+          <folding>
+            <element signature="e#9000#9001#0" expanded="true" />
+            <element signature="e#9028#9029#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ResImpl/exceptions/InvalidTransactionException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="4" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="4" />
+          <folding>
+            <element signature="e#152#153#0" expanded="true" />
+            <element signature="e#178#179#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ResImpl/exceptions/AbortedTransactionException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="4" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="4" />
+          <folding>
+            <element signature="e#152#153#0" expanded="true" />
+            <element signature="e#178#179#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="269" column="35" lean-forward="false" selection-start-line="269" selection-start-column="35" selection-end-line="269" selection-end-column="35" />
+        <state relative-caret-position="58">
+          <caret line="19" column="53" lean-forward="false" selection-start-line="19" selection-start-column="53" selection-end-line="19" selection-end-column="53" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareInterface.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6885">
+          <caret line="470" column="51" lean-forward="false" selection-start-line="470" selection-start-column="51" selection-end-line="470" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ResImpl/TransactionManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="81" column="50" lean-forward="false" selection-start-line="81" selection-start-column="50" selection-end-line="81" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -949,29 +961,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="417" column="19" lean-forward="false" selection-start-line="417" selection-start-column="19" selection-end-line="417" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareInterface.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
-          <caret line="407" column="56" lean-forward="true" selection-start-line="407" selection-start-column="56" selection-end-line="407" selection-end-column="56" />
+        <state relative-caret-position="157">
+          <caret line="38" column="30" lean-forward="false" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1098">
-          <caret line="96" column="52" lean-forward="false" selection-start-line="96" selection-start-column="29" selection-end-line="96" selection-end-column="52" />
+        <state relative-caret-position="116">
+          <caret line="8" column="57" lean-forward="false" selection-start-line="8" selection-start-column="57" selection-end-line="8" selection-end-column="57" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#495#528#0" expanded="true" />
-            <element signature="e#652#653#0" expanded="true" />
-            <element signature="e#704#705#0" expanded="true" />
+            <element signature="e#653#686#0" expanded="true" />
+            <element signature="e#748#757#0" expanded="true" />
           </folding>
         </state>
       </provider>

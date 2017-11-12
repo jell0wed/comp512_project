@@ -1,5 +1,7 @@
 package ResImpl;
 
+import ResImpl.exceptions.AbortedTransactionException;
+import ResImpl.exceptions.InvalidTransactionException;
 import ResImpl.exceptions.TransactionException;
 import transactions.LockManager.LockManager;
 
@@ -9,6 +11,7 @@ import java.util.function.Consumer;
 public class TransactionManager {
     private final Map<Integer, Stack<Consumer<RMHashtable>>> undoLogMap = new Hashtable<Integer, Stack<Consumer<RMHashtable>>>();
     private final Set<Integer> openTransactions = new HashSet<Integer>();
+    private final Set<Integer> abortedTransactions = new HashSet<>();
     private LockManager lockManager = new LockManager();
     private volatile int transactionCounter = 0;
 
@@ -43,21 +46,27 @@ public class TransactionManager {
         Trace.info("Locked " + key + " to trans id " + transId);
     }
 
-    public synchronized void commitTransaction(int transId) throws TransactionException {
+    public synchronized void commitTransaction(int transId) throws InvalidTransactionException, AbortedTransactionException {
         if(!this.doesTransactionExists(transId)) {
-            throw new TransactionException("No transaction with id " + transId);
+            throw new InvalidTransactionException("Transaction " + transId + " does not exists.");
+        }
+
+        if(this.abortedTransactions.contains(transId)) {
+            throw new AbortedTransactionException("Transaction " + transId + " aborted.");
         }
 
         try {
             Trace.info("Commit transaction id " + transId);
+            this.openTransactions.remove(transId);
+            this.undoLogMap.remove(transId);
         } finally {
             this.lockManager.UnlockAll(transId);
         }
     }
 
-    public synchronized void abortTransaction(int transId, ResourceManagerDatabase rmDb) throws TransactionException {
+    public synchronized void abortTransaction(int transId, ResourceManagerDatabase rmDb) throws InvalidTransactionException {
         if(!this.doesTransactionExists(transId)) {
-            throw new TransactionException("No transaction with id " + transId);
+            throw new InvalidTransactionException("No transaction with id " + transId);
         }
 
         try {
@@ -69,6 +78,10 @@ public class TransactionManager {
                 undoOp.accept(rmDb.m_itemHT);
                 Trace.info("Unrolled operation for trans " + transId);
             }
+
+            this.abortedTransactions.add(transId);
+            this.openTransactions.remove(transId);
+            this.undoLogMap.remove(transId);
         } finally {
             this.lockManager.UnlockAll(transId);
         }

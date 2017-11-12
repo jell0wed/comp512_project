@@ -1,5 +1,6 @@
 package middleware;
 
+import ResImpl.Trace;
 import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import middleware.entities.CustomerReservations;
@@ -20,6 +21,10 @@ public class MiddlewareInterface implements ResourceManager {
         this.middleware = serverInstance;
     }
 
+    private void handleTransactionException(int transId, TransactionException e) {
+        Trace.error("Transaction exception on transaction id " + transId + " : " + e.getMessage());
+    }
+
     @Override
     public int startTransaction() throws RemoteException {
         int transId = this.middleware.getTransactionManager().openTransaction();
@@ -32,6 +37,7 @@ public class MiddlewareInterface implements ResourceManager {
             this.middleware.getTransactionManager().commitTransaction(transId);
             return true;
         } catch (TransactionException e) {
+            this.handleTransactionException(transId, e);
             return false;
         }
     }
@@ -42,6 +48,7 @@ public class MiddlewareInterface implements ResourceManager {
             this.middleware.getTransactionManager().abortTransaction(transId);
             return true;
         } catch (TransactionException e) {
+            this.handleTransactionException(transId, e);
             return false;
         }
     }
@@ -57,6 +64,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .addFlight(rmTransId, flightNum, flightSeats, flightPrice);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -72,6 +80,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .addCars(rmTransId, location, numCars, price);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -87,6 +96,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .addRooms(rmTransId, location, numRooms, price);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
 
@@ -104,6 +114,7 @@ public class MiddlewareInterface implements ResourceManager {
             MiddlewareCustomerDatabase.getInstance().createCustomer(givenCustomerId);
             return givenCustomerId;
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return -1;
         }
     }
@@ -123,6 +134,7 @@ public class MiddlewareInterface implements ResourceManager {
 
             return newCustomerSuccess;
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -141,6 +153,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .deleteFlight(rmTransId, flightNum);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -159,6 +172,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .deleteCars(rmTransId, location);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -177,6 +191,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .deleteRooms(rmTransId, location);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -218,6 +233,7 @@ public class MiddlewareInterface implements ResourceManager {
 
             return deleteCustomerSuccess;
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -233,16 +249,25 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .queryFlight(rmTransId, flightNumber);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return -1;
         }
     }
 
     @Override
     public int queryCars(int id, String location) throws RemoteException {
-        return this.middleware
-                .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
-                .getResourceManager()
-                .queryCars(id, location);
+        try {
+            this.middleware.getTransactionManager().ensureTransactionExists(id);
+            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
+
+            return this.middleware
+                    .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
+                    .getResourceManager()
+                    .queryCars(rmTransId, location);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return -1;
+        }
     }
 
     @Override
@@ -254,8 +279,9 @@ public class MiddlewareInterface implements ResourceManager {
             return this.middleware
                     .getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY)
                     .getResourceManager()
-                    .queryRooms(id, location);
+                    .queryRooms(rmTransId, location);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return -1;
         }
     }
@@ -294,6 +320,7 @@ public class MiddlewareInterface implements ResourceManager {
 
             return customerInfo + billBuilder.toString();
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return "";
         }
     }
@@ -309,6 +336,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .queryFlightPrice(rmTransId, flightNumber);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return -1;
         }
     }
@@ -324,6 +352,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .queryCarsPrice(rmTransId, location);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return -1;
         }
     }
@@ -339,6 +368,7 @@ public class MiddlewareInterface implements ResourceManager {
                     .getResourceManager()
                     .queryRoomsPrice(rmTransId, location);
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return -1;
         }
     }
@@ -358,6 +388,7 @@ public class MiddlewareInterface implements ResourceManager {
 
             return reserveFlightSuccess;
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -377,6 +408,7 @@ public class MiddlewareInterface implements ResourceManager {
 
             return reserveCarSuccess;
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -396,6 +428,7 @@ public class MiddlewareInterface implements ResourceManager {
 
             return reserveRoomSuccess;
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
@@ -435,6 +468,7 @@ public class MiddlewareInterface implements ResourceManager {
 
             return true;
         } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
             return false;
         }
     }
