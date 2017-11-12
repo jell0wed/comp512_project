@@ -133,5 +133,9 @@ public interface ResourceManager extends Remote
 
     public boolean updateReservedQuantities(int id, String key, int incQty)
             throws RemoteException;
+
+    public int startTransaction() throws RemoteException;
+    public boolean commitTransaction(int transId) throws RemoteException;
+    public boolean abortTransaction(int transId) throws RemoteException;
     			
 }

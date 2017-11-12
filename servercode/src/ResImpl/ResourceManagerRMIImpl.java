@@ -4,18 +4,22 @@
 //
 package ResImpl;
 
+import ResImpl.exceptions.DeadlockException;
 import ResInterface.ResourceManager;
+import ResImpl.exceptions.TransactionException;
+import transactions.LockManager.LockManager;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Vector;
+import java.util.*;
 
 public class ResourceManagerRMIImpl implements ResourceManager {
-    
-    protected ResourceManagerDatabase rmDb = new ResourceManagerDatabase();
+
+    protected LockManager lockManager = new LockManager();
+    protected ResourceManagerDatabase rmDb;
+    private TransactionManager transManager = new TransactionManager();
 
 
     public static void main(String args[]) {
@@ -57,101 +61,202 @@ public class ResourceManagerRMIImpl implements ResourceManager {
     }
      
     public ResourceManagerRMIImpl() throws RemoteException {
+        this.rmDb = new ResourceManagerDatabase(this.transManager);
+    }
+
+    private void handleTransactionException(int transId, TransactionException e) {
+        if(e instanceof DeadlockException) {
+            this.abortTransaction(transId);
+        }
     }
 
     @Override
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
-        return this.rmDb.addFlight(id, flightNum, flightSeats, flightPrice);
+        try {
+            return this.rmDb.addFlight(id, flightNum, flightSeats, flightPrice);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public boolean addCars(int id, String location, int numCars, int price) throws RemoteException {
-        return this.rmDb.addCars(id, location, numCars, price);
+        try {
+            return this.rmDb.addCars(id, location, numCars, price);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException {
-        return this.rmDb.addRooms(id, location, numRooms, price);
+        try {
+            return this.rmDb.addRooms(id, location, numRooms, price);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public int newCustomer(int id) throws RemoteException {
-        return this.rmDb.newCustomer(id);
+        try {
+            return this.rmDb.newCustomer(id);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return -1;
+        }
     }
 
     @Override
     public boolean newCustomer(int id, int cid) throws RemoteException {
-        return this.rmDb.newCustomer(id, cid);
+        try {
+            return this.rmDb.newCustomer(id, cid);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public boolean deleteFlight(int id, int flightNum) throws RemoteException {
-        return this.rmDb.deleteFlight(id, flightNum);
+        try {
+            return this.rmDb.deleteFlight(id, flightNum);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public boolean deleteCars(int id, String location) throws RemoteException {
-        return this.deleteCars(id, location);
+        try {
+            return this.rmDb.deleteCars(id, location);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public boolean deleteRooms(int id, String location) throws RemoteException {
-        return this.deleteRooms(id, location);
+        try {
+            return this.rmDb.deleteRooms(id, location);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public boolean deleteCustomer(int id, int customer) throws RemoteException {
-        return this.deleteCustomer(id, customer);
+        try {
+            return this.rmDb.deleteCustomer(id, customer);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public int queryFlight(int id, int flightNumber) throws RemoteException {
-        return this.queryFlight(id, flightNumber);
+        try {
+            return this.rmDb.queryFlight(id, flightNumber);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id ,e);
+            return -1;
+        }
     }
 
     @Override
     public int queryCars(int id, String location) throws RemoteException {
-        return this.queryCars(id, location);
+        try {
+            return this.rmDb.queryCars(id, location);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return -1;
+        }
     }
 
     @Override
     public int queryRooms(int id, String location) throws RemoteException {
-        return this.queryRooms(id, location);
+        try {
+            return this.rmDb.queryRooms(id, location);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return -1;
+        }
     }
 
     @Override
     public String queryCustomerInfo(int id, int customer) throws RemoteException {
-        return this.queryCustomerInfo(id, customer);
+        try {
+            return this.rmDb.queryCustomerInfo(id, customer);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return "";
+        }
     }
 
     @Override
     public int queryFlightPrice(int id, int flightNumber) throws RemoteException {
-        return this.queryFlightPrice(id, flightNumber);
+        try {
+            return this.rmDb.queryFlightPrice(id, flightNumber);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return -1;
+        }
     }
 
     @Override
     public int queryCarsPrice(int id, String location) throws RemoteException {
-        return this.queryCarsPrice(id, location);
+        try {
+            return this.rmDb.queryCarsPrice(id, location);
+        } catch (TransactionException e) {
+            return -1;
+        }
     }
 
     @Override
     public int queryRoomsPrice(int id, String location) throws RemoteException {
-        return this.queryRoomsPrice(id, location);
+        try {
+            return this.rmDb.queryRoomsPrice(id, location);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return -1;
+        }
     }
 
     @Override
     public boolean reserveFlight(int id, int customer, int flightNumber) throws RemoteException {
-        return this.reserveFlight(id, customer, flightNumber);
+        try {
+            return this.rmDb.reserveFlight(id, customer, flightNumber);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public boolean reserveCar(int id, int customer, String location) throws RemoteException {
-        return this.rmDb.reserveCar(id, customer, location);
+        try {
+            return this.rmDb.reserveCar(id, customer, location);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
     public boolean reserveRoom(int id, int customer, String locationd) throws RemoteException {
-        return this.rmDb.reserveRoom(id, customer, locationd);
+        try {
+            return this.rmDb.reserveRoom(id, customer, locationd);
+        } catch (TransactionException e) {
+            this.handleTransactionException(id, e);
+            return false;
+        }
     }
 
     @Override
@@ -161,6 +266,37 @@ public class ResourceManagerRMIImpl implements ResourceManager {
 
     @Override
     public boolean updateReservedQuantities(int id, String key, int incQty) throws RemoteException {
-        return this.rmDb.updateReservedQuantities(id, key, incQty);
+        try {
+            return this.rmDb.updateReservedQuantities(id, key, incQty);
+        } catch (TransactionException e) {
+            return false;
+        }
     }
+
+    @Override
+    public int startTransaction() {
+        return this.transManager.initializeTransaction();
+    }
+
+    @Override
+    public boolean commitTransaction(int transId) {
+        try {
+            this.transManager.commitTransaction(transId);
+            return true;
+        } catch (TransactionException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean abortTransaction(int transId) {
+        try {
+            this.transManager.abortTransaction(transId, this.rmDb);
+            return true;
+        } catch (TransactionException e) {
+            return false;
+        }
+    }
+
+
 }

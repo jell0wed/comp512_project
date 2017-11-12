@@ -1,41 +1,55 @@
 package ResImpl;
 
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Vector;
+import ResImpl.exceptions.TransactionException;
+import ResImpl.exceptions.TransactionException;
+import transactions.LockManager.LockManager;
+
+import java.util.*;
 
 /**
  * Created by jpoisson on 2017-10-05.
  */
 public class ResourceManagerDatabase {
-    protected RMHashtable m_itemHT = new RMHashtable();
+    RMHashtable m_itemHT = new RMHashtable();
+    private TransactionManager transManager;
+
+    ResourceManagerDatabase(TransactionManager transManager) {
+        this.transManager = transManager;
+    }
 
     // Reads a data item
-    private RMItem readData( int id, String key )
-    {
-        synchronized(m_itemHT) {
-            return (RMItem) m_itemHT.get(key);
-        }
+    private RMItem readData(int id, String key ) throws TransactionException {
+        this.transManager.lock(id, key, LockManager.READ);
+        return (RMItem) m_itemHT.get(key);
     }
 
     // Writes a data item
-    private void writeData( int id, String key, RMItem value )
-    {
-        synchronized(m_itemHT) {
-            m_itemHT.put(key, value);
-        }
+    private void writeData(int id, String key, RMItem value ) throws TransactionException {
+        this.transManager.lock(id, key, LockManager.WRITE);
+        final RMItem beforeImage = this.readData(id, key);
+
+        m_itemHT.put(key, value);
+        this.transManager.appendUndoLog(id, rmHashTable -> {
+            rmHashTable.put(key, beforeImage);
+        });
     }
 
     // Remove the item out of storage
-    protected RMItem removeData(int id, String key) {
-        synchronized(m_itemHT) {
-            return (RMItem)m_itemHT.remove(key);
-        }
+    protected RMItem removeData(int id, String key) throws TransactionException {
+        this.transManager.lock(id, key, LockManager.WRITE);
+        final RMItem beforeValue = this.readData(id, key);
+
+        RMItem removed = (RMItem)m_itemHT.remove(key);
+        this.transManager.appendUndoLog(id, rmHashTable -> {
+            rmHashTable.put(key, beforeValue);
+        });
+
+        return removed;
     }
 
 
     // deletes the entire item
-    protected boolean deleteItem(int id, String key)
+    protected boolean deleteItem(int id, String key) throws TransactionException
     {
         Trace.info("RM::deleteItem(" + id + ", " + key + ") called" );
         ReservableItem curObj = (ReservableItem) readData( id, key );
@@ -58,7 +72,7 @@ public class ResourceManagerDatabase {
 
 
     // query the number of available seats/rooms/cars
-    protected int queryNum(int id, String key) {
+    protected int queryNum(int id, String key) throws TransactionException {
         Trace.info("RM::queryNum(" + id + ", " + key + ") called" );
         ReservableItem curObj = (ReservableItem) readData( id, key);
         int value = 0;
@@ -70,7 +84,7 @@ public class ResourceManagerDatabase {
     }
 
     // query the price of an item
-    protected int queryPrice(int id, String key) {
+    protected int queryPrice(int id, String key) throws TransactionException {
         Trace.info("RM::queryCarsPrice(" + id + ", " + key + ") called" );
         ReservableItem curObj = (ReservableItem) readData( id, key);
         int value = 0;
@@ -82,7 +96,7 @@ public class ResourceManagerDatabase {
     }
 
     // reserve an item
-    protected boolean reserveItem(int id, int customerID, String key, String location) {
+    protected boolean reserveItem(int id, int customerID, String key, String location) throws TransactionException {
         Trace.info("RM::reserveItem( " + id + ", customer=" + customerID + ", " +key+ ", "+location+" ) called" );
         // Read customer object if it exists (and read lock it)
         Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
@@ -114,7 +128,7 @@ public class ResourceManagerDatabase {
 
     // Create a new flight, or add seats to existing flight
     //  NOTE: if flightPrice <= 0 and the flight already exists, it maintains its current price
-    public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice)
+    public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws TransactionException
     {
         Trace.info("RM::addFlight(" + id + ", " + flightNum + ", $" + flightPrice + ", " + flightSeats + ") called" );
         Flight curObj = (Flight) readData( id, Flight.getKey(flightNum) );
@@ -138,7 +152,7 @@ public class ResourceManagerDatabase {
 
 
 
-    public boolean deleteFlight(int id, int flightNum)
+    public boolean deleteFlight(int id, int flightNum) throws TransactionException
     {
         return deleteItem(id, Flight.getKey(flightNum));
     }
@@ -147,7 +161,7 @@ public class ResourceManagerDatabase {
 
     // Create a new room location or add rooms to an existing location
     //  NOTE: if price <= 0 and the room location already exists, it maintains its current price
-    public boolean addRooms(int id, String location, int count, int price)
+    public boolean addRooms(int id, String location, int count, int price) throws TransactionException
     {
         Trace.info("RM::addRooms(" + id + ", " + location + ", " + count + ", $" + price + ") called" );
         Hotel curObj = (Hotel) readData( id, Hotel.getKey(location) );
@@ -169,7 +183,7 @@ public class ResourceManagerDatabase {
     }
 
     // Delete rooms from a location
-    public boolean deleteRooms(int id, String location)
+    public boolean deleteRooms(int id, String location) throws TransactionException
     {
         return deleteItem(id, Hotel.getKey(location));
 
@@ -177,7 +191,7 @@ public class ResourceManagerDatabase {
 
     // Create a new car location or add cars to an existing location
     //  NOTE: if price <= 0 and the location already exists, it maintains its current price
-    public boolean addCars(int id, String location, int count, int price)
+    public boolean addCars(int id, String location, int count, int price) throws TransactionException
     {
         Trace.info("RM::addCars(" + id + ", " + location + ", " + count + ", $" + price + ") called" );
         Car curObj = (Car) readData( id, Car.getKey(location) );
@@ -200,7 +214,7 @@ public class ResourceManagerDatabase {
 
 
     // Delete cars from a location
-    public boolean deleteCars(int id, String location)
+    public boolean deleteCars(int id, String location) throws TransactionException
     {
         return deleteItem(id, Car.getKey(location));
     }
@@ -208,7 +222,7 @@ public class ResourceManagerDatabase {
 
 
     // Returns the number of empty seats on this flight
-    public int queryFlight(int id, int flightNum)
+    public int queryFlight(int id, int flightNum) throws TransactionException
     {
         return queryNum(id, Flight.getKey(flightNum));
     }
@@ -228,14 +242,14 @@ public class ResourceManagerDatabase {
 
 
     // Returns price of this flight
-    public int queryFlightPrice(int id, int flightNum )
+    public int queryFlightPrice(int id, int flightNum ) throws TransactionException
     {
         return queryPrice(id, Flight.getKey(flightNum));
     }
 
 
     // Returns the number of rooms available at a location
-    public int queryRooms(int id, String location)
+    public int queryRooms(int id, String location) throws TransactionException
     {
         return queryNum(id, Hotel.getKey(location));
     }
@@ -244,21 +258,21 @@ public class ResourceManagerDatabase {
 
 
     // Returns room price at this location
-    public int queryRoomsPrice(int id, String location)
+    public int queryRoomsPrice(int id, String location) throws TransactionException
     {
         return queryPrice(id, Hotel.getKey(location));
     }
 
 
     // Returns the number of cars available at a location
-    public int queryCars(int id, String location)
+    public int queryCars(int id, String location) throws TransactionException
     {
         return queryNum(id, Car.getKey(location));
     }
 
 
     // Returns price of cars at this location
-    public int queryCarsPrice(int id, String location)
+    public int queryCarsPrice(int id, String location) throws TransactionException
     {
         return queryPrice(id, Car.getKey(location));
     }
@@ -266,7 +280,7 @@ public class ResourceManagerDatabase {
     // Returns data structure containing customer reservation info. Returns null if the
     //  customer doesn't exist. Returns empty RMHashtable if customer exists but has no
     //  reservations.
-    public RMHashtable getCustomerReservations(int id, int customerID)
+    public RMHashtable getCustomerReservations(int id, int customerID) throws TransactionException
     {
         Trace.info("RM::getCustomerReservations(" + id + ", " + customerID + ") called" );
         Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
@@ -279,7 +293,7 @@ public class ResourceManagerDatabase {
     }
 
     // return a bill
-    public String queryCustomerInfo(int id, int customerID)
+    public String queryCustomerInfo(int id, int customerID) throws TransactionException
     {
         Trace.info("RM::queryCustomerInfo(" + id + ", " + customerID + ") called" );
         Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
@@ -297,7 +311,7 @@ public class ResourceManagerDatabase {
     // customer functions
     // new customer just returns a unique customer identifier
 
-    public int newCustomer(int id)
+    public int newCustomer(int id) throws TransactionException
     {
         Trace.info("INFO: RM::newCustomer(" + id + ") called" );
         // Generate a globally unique ID for the new customer
@@ -311,7 +325,7 @@ public class ResourceManagerDatabase {
     }
 
     // I opted to pass in customerID instead. This makes testing easier
-    public boolean newCustomer(int id, int customerID )
+    public boolean newCustomer(int id, int customerID ) throws TransactionException
     {
         Trace.info("INFO: RM::newCustomer(" + id + ", " + customerID + ") called" );
         Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
@@ -328,7 +342,7 @@ public class ResourceManagerDatabase {
 
 
     // Deletes customer from the database.
-    public boolean deleteCustomer(int id, int customerID)
+    public boolean deleteCustomer(int id, int customerID) throws TransactionException
     {
         Trace.info("RM::deleteCustomer(" + id + ", " + customerID + ") called" );
         Customer cust = (Customer) readData( id, Customer.getKey(customerID) );
@@ -378,19 +392,19 @@ public class ResourceManagerDatabase {
 
 
     // Adds car reservation to this customer.
-    public boolean reserveCar(int id, int customerID, String location)
+    public boolean reserveCar(int id, int customerID, String location) throws TransactionException
     {
         return reserveItem(id, customerID, Car.getKey(location), location);
     }
 
 
     // Adds room reservation to this customer.
-    public boolean reserveRoom(int id, int customerID, String location)
+    public boolean reserveRoom(int id, int customerID, String location) throws TransactionException
     {
         return reserveItem(id, customerID, Hotel.getKey(location), location);
     }
     // Adds flight reservation to this customer.
-    public boolean reserveFlight(int id, int customerID, int flightNum)
+    public boolean reserveFlight(int id, int customerID, int flightNum) throws TransactionException
     {
         return reserveItem(id, customerID, Flight.getKey(flightNum), String.valueOf(flightNum));
     }
@@ -401,7 +415,7 @@ public class ResourceManagerDatabase {
         return false;
     }
 
-    public boolean updateReservedQuantities(int id, String key, int incQty) {
+    public boolean updateReservedQuantities(int id, String key, int incQty) throws TransactionException {
         ReservableItem item = (ReservableItem)readData(id, key);
         if ( item == null ) {
             Trace.warn("RM::reserveItem( " + id + ", " + key+") failed--item doesn't exist" );
