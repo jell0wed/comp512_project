@@ -27,9 +27,19 @@ public class DistributedTransactionManager {
     public synchronized int openTransaction() {
         int transId = ++this.transactionCounter;
         DistributedTransaction transaction = new DistributedTransaction();
+        transaction.timeToLive = new Debouncer<Integer>(x -> {
+            try {
+                Trace.info("Terminating transaction " + transId + " after time to live timeout.");
+                this.abortTransaction(transId);
+            } catch (InvalidTransactionException e) {
+                Trace.info(e.getMessage());
+            }
+            return null;
+        }, 10 * 1000);
+        transaction.timeToLive.call(0);
 
         this.openTransactions.put(transId, transaction);
-
+        Trace.info("Started middleware transaction id = " + transId);
         return transId;
     }
 
@@ -45,6 +55,7 @@ public class DistributedTransactionManager {
 
         // make sure to commit on all resource managers
         DistributedTransaction distTrans = this.openTransactions.get(transId);
+        distTrans.timeToLive.terminate();
         for(ResourceManagerTypes rmType: distTrans.enlistedRms.keySet()) {
             ResourceManager rm = this.middleware.getRemoteResourceManagerForType(rmType).getResourceManager();
             int rmTransId = distTrans.enlistedRms.get(rmType);
@@ -65,6 +76,7 @@ public class DistributedTransactionManager {
 
         // make sure to abort on all resource managers
         DistributedTransaction distTrans = this.openTransactions.get(transId);
+        distTrans.timeToLive.terminate();
         for(ResourceManagerTypes rmType: distTrans.enlistedRms.keySet()) {
             ResourceManager rm = this.middleware.getRemoteResourceManagerForType(rmType).getResourceManager();
             int rmTransId = distTrans.enlistedRms.get(rmType);
@@ -87,6 +99,7 @@ public class DistributedTransactionManager {
 
         // make sure a transaction has been initialized for rmType
         DistributedTransaction distTrans = this.openTransactions.get(transId);
+        distTrans.timeToLive.call(0);
         Integer rmTransId = null;
         if(!distTrans.enlistedRms.containsKey(rmType)) {
             // start a new transaction at the rm

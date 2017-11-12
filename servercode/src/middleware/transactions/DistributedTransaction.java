@@ -7,5 +7,5 @@ import java.util.Map;
 
 class DistributedTransaction {
     Map<ResourceManagerTypes, Integer> enlistedRms = new Hashtable<>();
-
+    Debouncer<Integer> timeToLive = null;
 }
