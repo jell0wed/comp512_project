@@ -111,6 +111,15 @@ public class RMILoadTestClient implements Runnable {
     class RMILoadTestRequest implements Runnable {
         public RMILoadTestRequest() { super(); }
 
+        public String getRandomLocation() {
+            String[] locations = new String[]{"mtl", "nyc", "sf", "paris", "toronto", "vancouver"};
+            return locations[(int)Math.floor(Math.random() * (float)(locations.length - 1))];
+        }
+
+        public int getRandomFlightNumber() {
+            return (int)Math.floor(Math.random() * 10000);
+        }
+
         public void run() {
             requestCount++;
 
@@ -129,18 +138,21 @@ public class RMILoadTestClient implements Runnable {
             // Request
             try {
                 // Test add car
+
+
                 // Involves one resource manangers
                 int transId = rm.startTransaction();
-                rm.addCars(transId, "mtl", 1, 100);
+                rm.addCars(transId, getRandomLocation(), 1, 100);
                 rm.commitTransaction(transId);
 
                 // Test query all
                 // Involves all resource managers
                 int transId4 = rm.startTransaction();
-                rm.queryFlight(transId4, 9000);
-                rm.queryCars(transId4, "mtl");
-                rm.queryRooms(transId4, "mtl");
+                rm.queryFlight(transId4, getRandomFlightNumber());
+                rm.queryCars(transId4, getRandomLocation());
+                rm.queryRooms(transId4, getRandomLocation());
                 rm.commitTransaction(transId4);
+
             } catch(Exception e) {
                 requestErrors++;
                 System.err.println("#" + clientIdentifier + " Client exception: " + e.toString());
