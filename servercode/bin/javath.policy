@@ -1,0 +1,4 @@
+grant codeBase "file:/Users/theoszymkowiak/Desktop/McGill/Courses/COMP512/Workspace/comp512_project/servercode/build/classes/main/" {
+    permission java.security.AllPermission;
+};
+
