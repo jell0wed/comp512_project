@@ -27,17 +27,18 @@ public class RMILoadTestClient implements Runnable {
     private long cumulativeRequestTimes;
 
     public static void main(String[] args) {
-        RMILoadTestClient client = new RMILoadTestClient(50.0f, 0);
+        RMILoadTestClient client = new RMILoadTestClient(80.0f, 0);
         client.run();
     }
 
     public RMILoadTestClient(float _requestPerSeconds, int _clientIdentifier) {
         clientIdentifier = _clientIdentifier;
         requestPerSeconds = _requestPerSeconds;
+        stopRequestCount = (int)(requestPerSeconds * 60.0f * 5.0f);
     }
 
     public void run() {
-        System.out.println("Starting load client #" + clientIdentifier + " with " + requestPerSeconds + " requests/s");
+        System.out.println("Starting load client #" + clientIdentifier + " with " + requestPerSeconds + " requests/s, doing " + stopRequestCount + " requests");
 
         try {
             Registry registry = LocateRegistry.getRegistry(REGISTRY_HOST, REGISTRY_POST);
@@ -92,6 +93,7 @@ public class RMILoadTestClient implements Runnable {
 
         int successfullRequests = requestCount - earlyAbort - requestErrors;
 
+        System.out.println("Requests per seconds: " + requestPerSeconds + "/s");
         System.out.println("Requests: " + requestCount);
         System.out.println("Success: " + successfullRequests + " (" + printFormattedPercentage(successfullRequests, requestCount) + "%)");
         System.out.println("Early abort: " + earlyAbort + " (" + printFormattedPercentage(earlyAbort, requestCount) + "%)");
@@ -127,32 +129,18 @@ public class RMILoadTestClient implements Runnable {
             // Request
             try {
                 // Test add car
+                // Involves one resource manangers
                 int transId = rm.startTransaction();
                 rm.addCars(transId, "mtl", 1, 100);
                 rm.commitTransaction(transId);
 
-                // Test read car
-                int transId2 = rm.startTransaction();
-                rm.queryCars(transId2, "mtl");
-                rm.commitTransaction(transId2);
-
-                // Test write + read (convert)
-                int transId3 = rm.startTransaction();
-                rm.queryCars(transId3, "mtl");
-                rm.addCars(transId3, "mtl", 1, 200);
-                rm.abortTransaction(transId3);
-
-                // Test add flight
+                // Test query all
+                // Involves all resource managers
                 int transId4 = rm.startTransaction();
-                rm.addFlight(transId4, 9000, 2, 200);
+                rm.queryFlight(transId4, 9000);
                 rm.queryCars(transId4, "mtl");
+                rm.queryRooms(transId4, "mtl");
                 rm.commitTransaction(transId4);
-
-                // Test add room
-                int transId5 = rm.startTransaction();
-                rm.addRooms(transId5, "mtl", 2, 100);
-                rm.abortTransaction(transId5);
-
             } catch(Exception e) {
                 requestErrors++;
                 System.err.println("#" + clientIdentifier + " Client exception: " + e.toString());
