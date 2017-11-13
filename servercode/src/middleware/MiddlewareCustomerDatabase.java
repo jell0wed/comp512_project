@@ -2,7 +2,9 @@ package middleware;
 
 import middleware.entities.CustomerReservations;
 
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.LinkedList;
 
 /**
  * Created by jpoisson on 2017-09-27.
@@ -26,6 +28,10 @@ public class MiddlewareCustomerDatabase {
 
     public synchronized void createCustomer(int customerId) {
         this.customerReservations.put(customerId, new CustomerReservations());
+    }
+
+    public synchronized void createCustomer(int customerId, CustomerReservations reservation) {
+        this.customerReservations.put(customerId, reservation);
     }
 
     public synchronized void deleteCustomer(int customerId) {
@@ -57,25 +63,55 @@ public class MiddlewareCustomerDatabase {
         this.customerReservations.put(customerId, reservations);
     }
 
-    public synchronized void deleteRoom(String key) {
+    public synchronized Collection<Integer> deleteRoom(String key) {
+        LinkedList<Integer> affectedCustomers = new LinkedList<>();
         for(int customerId: this.customerReservations.keySet()) {
             CustomerReservations reservations = this.customerReservations.get(customerId);
-            reservations.removeRoom(key);
+            if(reservations.removeRoom(key)) {
+                affectedCustomers.add(customerId);
+            }
         }
+
+        return affectedCustomers;
     }
 
-    public synchronized void deleteCar(String key) {
+    public synchronized Collection<Integer> deleteCar(String key) {
+        LinkedList<Integer> affectedCustomers = new LinkedList<>();
         for(int customerId: this.customerReservations.keySet()) {
             CustomerReservations reservations = this.customerReservations.get(customerId);
-            reservations.removeCars(key);
+            if(reservations.removeCars(key)) {
+                affectedCustomers.add(customerId);
+            }
         }
+
+        return affectedCustomers;
     }
 
-    public synchronized void deleteFlight(int no) {
+    public synchronized Collection<Integer> deleteFlight(int no) {
+        LinkedList<Integer> affectedCustomers = new LinkedList<>();
         for(int customerId: this.customerReservations.keySet()) {
             CustomerReservations reservations = this.customerReservations.get(customerId);
-            reservations.removeFlight(no);
+            if(reservations.removeFlight(no)) {
+                affectedCustomers.add(customerId);
+            }
         }
+
+        return affectedCustomers;
+    }
+
+    public synchronized boolean deleteReservedFlight(int cid, int flight) {
+        CustomerReservations reservations = this.customerReservations.get(cid);
+        return reservations.removeFlight(flight);
+    }
+
+    public synchronized boolean deleteReservedCar(int cid, String location) {
+        CustomerReservations reservations = this.customerReservations.get(cid);
+        return reservations.removeCars(location);
+    }
+
+    public synchronized boolean deleteReservedRoom(int cid, String location) {
+        CustomerReservations reservations = this.customerReservations.get(cid);
+        return reservations.removeRoom(location);
     }
 
 

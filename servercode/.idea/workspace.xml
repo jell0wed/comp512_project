@@ -2,46 +2,46 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="189bdd13-bca6-4a6a-9716-c3191b2cd2fb" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_commons_commons_collections4_4_1.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/bin/startCentralizedMiddleware.sh" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/bin/startCentralizedRm.sh" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/resources/classDiag" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/TransactionManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/exceptions/AbortedTransactionException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/exceptions/DeadlockException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/exceptions/InvalidTransactionException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/exceptions/TransactionException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/clients/RMIClient.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/middleware/impl/rmi/MiddlewareRMICentralizedSever.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/middleware/transactions/Debouncer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/LockManagerTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/DataObj.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/LockManager.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/RedundantLockRequestException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/TPHashTable.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/middleware/transactions/Debouncer.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/DataObj.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/TimeObj.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/TrxnObj.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/WaitObj.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/clients/RMIClient.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/exceptions/AbortedTransactionException.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/middleware/impl/rmi/MiddlewareRMICentralizedSever.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/XObj.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/servercode_main.iml" afterPath="$PROJECT_DIR$/.idea/modules/servercode_main.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/servercode_test.iml" afterPath="$PROJECT_DIR$/.idea/modules/servercode_test.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/startMiddleware.sh" afterPath="$PROJECT_DIR$/bin/startMiddleware.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/java.policy" afterPath="$PROJECT_DIR$/java.policy" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/servercode.iml" afterPath="$PROJECT_DIR$/servercode.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java" afterPath="$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java" afterPath="$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPClient.java" afterPath="$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPClient.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/exceptions/TransactionException.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/resources/classDiag" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/bin/startCentralizedRm.sh" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/TrxnObj.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/bin/startCentralizedMiddleware.sh" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/TPHashTable.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/transactions/LockManager/LockManager.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_commons_commons_collections4_4_1.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/LockManagerTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/exceptions/InvalidTransactionException.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/TransactionManager.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ResImpl/exceptions/DeadlockException.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPImpl.java" afterPath="$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResInterface/ResourceManager.java" afterPath="$PROJECT_DIR$/src/ResInterface/ResourceManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/middleware/MiddlewareInterface.java" afterPath="$PROJECT_DIR$/src/middleware/MiddlewareInterface.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java" afterPath="$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/middleware/MiddlewareServer.java" afterPath="$PROJECT_DIR$/src/middleware/MiddlewareServer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/servercode.iml" afterPath="$PROJECT_DIR$/servercode.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResInterface/ResourceManager.java" afterPath="$PROJECT_DIR$/src/ResInterface/ResourceManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/servercode_test.iml" afterPath="$PROJECT_DIR$/.idea/modules/servercode_test.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPClient.java" afterPath="$PROJECT_DIR$/src/ResImpl/ResourceManagerTCPClient.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/startMiddleware.sh" afterPath="$PROJECT_DIR$/bin/startMiddleware.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java" afterPath="$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/middleware/MiddlewareInterface.java" afterPath="$PROJECT_DIR$/src/middleware/MiddlewareInterface.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/servercode_main.iml" afterPath="$PROJECT_DIR$/.idea/modules/servercode_main.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/java.policy" afterPath="$PROJECT_DIR$/java.policy" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/middleware/resource_managers/impl/RMIResourceManagerServerImpl.java" afterPath="$PROJECT_DIR$/src/middleware/resource_managers/impl/RMIResourceManagerServerImpl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -96,11 +96,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="RMIClient.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="RMIClient.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/clients/RMIClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" column="13" lean-forward="true" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+            <state relative-caret-position="53">
+              <caret line="21" column="13" lean-forward="false" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -111,10 +111,45 @@
       <file leaf-file-name="DistributedTransactionManager.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="38" column="35" lean-forward="false" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="35" />
+            <state relative-caret-position="293">
+              <caret line="85" column="68" lean-forward="false" selection-start-line="85" selection-start-column="68" selection-end-line="85" selection-end-column="68" />
               <folding>
                 <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MiddlewareInterface.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareInterface.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-365">
+              <caret line="459" column="87" lean-forward="false" selection-start-line="459" selection-start-column="87" selection-end-line="459" selection-end-column="87" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MiddlewareCustomerDatabase.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareCustomerDatabase.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="509">
+              <caret line="113" column="49" lean-forward="false" selection-start-line="113" selection-start-column="49" selection-end-line="113" selection-end-column="49" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CustomerReservations.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/middleware/entities/CustomerReservations.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+              <folding>
+                <element signature="e#718#719#0" expanded="true" />
+                <element signature="e#766#767#0" expanded="true" />
+                <element signature="e#1472#1473#0" expanded="true" />
+                <element signature="e#1525#1526#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -123,36 +158,11 @@
       <file leaf-file-name="DistributedTransaction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="9" column="21" lean-forward="false" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
+            <state relative-caret-position="195">
+              <caret line="13" column="67" lean-forward="false" selection-start-line="13" selection-start-column="48" selection-end-line="13" selection-end-column="67" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Debouncer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/middleware/transactions/Debouncer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#532#546#0" expanded="true" />
-                <element signature="e#1208#1209#0" expanded="true" />
-                <element signature="e#1243#1244#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build.gradle">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="22" column="85" lean-forward="false" selection-start-line="22" selection-start-column="85" selection-end-line="22" selection-end-column="85" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -175,10 +185,11 @@
       <find>rmTransId</find>
       <find>throw new</find>
       <find>reserveItem</find>
-      <find>throw new</find>
       <find>terminate</find>
       <find>shutdownNow</find>
       <find>.call</find>
+      <find>reserveFli</find>
+      <find>remove</find>
     </findStrings>
     <replaceStrings>
       <replace>TransactionException</replace>
@@ -366,7 +377,7 @@
     <option name="modificationStamps">
       <map>
         <entry key="$PROJECT_DIR$" value="3021017449000" />
-        <entry key="$PROJECT_DIR$/build.gradle" value="2777168928" />
+        <entry key="$PROJECT_DIR$/build.gradle" value="3120231323" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -490,7 +501,6 @@
         <option value="$PROJECT_DIR$/src/middleware/DistributedTransaction.java" />
         <option value="$PROJECT_DIR$/src/middleware/MiddlewareServer.java" />
         <option value="$PROJECT_DIR$/src/ResImpl/ResourceManagerRMIImpl.java" />
-        <option value="$PROJECT_DIR$/src/middleware/MiddlewareInterface.java" />
         <option value="$PROJECT_DIR$/src/ResImpl/exceptions/InvalidTransactionException.java" />
         <option value="$PROJECT_DIR$/src/ResImpl/exceptions/AbortedTransactionException.java" />
         <option value="$PROJECT_DIR$/src/ResImpl/ResourceManagerDatabase.java" />
@@ -500,6 +510,9 @@
         <option value="$PROJECT_DIR$/src/middleware/transactions/Debouncer.java" />
         <option value="$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java" />
         <option value="$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java" />
+        <option value="$PROJECT_DIR$/src/middleware/entities/CustomerReservations.java" />
+        <option value="$PROJECT_DIR$/src/middleware/MiddlewareCustomerDatabase.java" />
+        <option value="$PROJECT_DIR$/src/middleware/MiddlewareInterface.java" />
       </list>
     </option>
   </component>
@@ -513,7 +526,7 @@
     <option name="x" value="-1" />
     <option name="y" value="23" />
     <option name="width" value="1693" />
-    <option name="height" value="1023" />
+    <option name="height" value="873" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -530,6 +543,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="AndroidView" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -563,19 +579,6 @@
             </path>
             <path>
               <item name="servercode" type="b2602c69:ProjectViewProjectNode" />
-              <item name="servercode" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="ResImpl" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="servercode" type="b2602c69:ProjectViewProjectNode" />
-              <item name="servercode" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="ResImpl" type="462c0819:PsiDirectoryNode" />
-              <item name="exceptions" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="servercode" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
@@ -583,9 +586,6 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
-      <pane id="Scratches" />
-      <pane id="Scope" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -768,44 +768,45 @@
       <option name="presentableId" value="Default" />
       <updated>1510499118661</updated>
       <workItem from="1510499119970" duration="16573000" />
+      <workItem from="1510582996703" duration="1756000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16573000" />
+    <option name="totallyTimeSpent" value="18329000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1680" height="1023" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="873" extended-state="6" />
     <editor active="true" />
     <layout>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32904884" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3286638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24293059" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25274727" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25885227" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3018598" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25863114" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27506426" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32904884" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -821,6 +822,57 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/clients/RMIClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="38" column="35" lean-forward="false" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="35" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="21" lean-forward="false" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/middleware/transactions/Debouncer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#532#546#0" expanded="false" />
+            <element signature="e#1208#1209#0" expanded="false" />
+            <element signature="e#1243#1244#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" column="85" lean-forward="false" selection-start-line="22" selection-start-column="85" selection-end-line="22" selection-end-column="85" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/clients/RMIClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -865,9 +917,9 @@
           <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#532#546#0" expanded="true" />
-            <element signature="e#1208#1209#0" expanded="true" />
-            <element signature="e#1243#1244#0" expanded="true" />
+            <element signature="e#532#546#0" expanded="false" />
+            <element signature="e#1208#1209#0" expanded="false" />
+            <element signature="e#1243#1244#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -883,7 +935,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-605">
           <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1018,14 +1069,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareInterface.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6885">
-          <caret line="470" column="51" lean-forward="false" selection-start-line="470" selection-start-column="51" selection-end-line="470" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
@@ -1036,22 +1079,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/middleware/transactions/Debouncer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
+        <state relative-caret-position="405">
           <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#532#546#0" expanded="true" />
-            <element signature="e#1208#1209#0" expanded="true" />
-            <element signature="e#1243#1244#0" expanded="true" />
+            <element signature="e#532#546#0" expanded="false" />
+            <element signature="e#1208#1209#0" expanded="false" />
+            <element signature="e#1243#1244#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home/src.zip!/java/lang/Void.java" />
+    <entry file="file://$PROJECT_DIR$/src/clients/RMIClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="53">
+          <caret line="21" column="13" lean-forward="false" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransaction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="9" column="21" lean-forward="false" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
+        <state relative-caret-position="195">
+          <caret line="13" column="67" lean-forward="false" selection-start-line="13" selection-start-column="48" selection-end-line="13" selection-end-column="67" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1060,21 +1113,48 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/middleware/transactions/DistributedTransactionManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="38" column="35" lean-forward="false" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="35" />
+        <state relative-caret-position="293">
+          <caret line="85" column="68" lean-forward="false" selection-start-line="85" selection-start-column="68" selection-end-line="85" selection-end-column="68" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/clients/RMIClient.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home/src.zip!/java/util/Collection.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="13" lean-forward="true" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+        <state relative-caret-position="316">
+          <caret line="310" column="12" lean-forward="false" selection-start-line="310" selection-start-column="12" selection-end-line="310" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/middleware/entities/CustomerReservations.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#718#719#0" expanded="true" />
+            <element signature="e#766#767#0" expanded="true" />
+            <element signature="e#1472#1473#0" expanded="true" />
+            <element signature="e#1525#1526#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareCustomerDatabase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="509">
+          <caret line="113" column="49" lean-forward="false" selection-start-line="113" selection-start-column="49" selection-end-line="113" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/middleware/MiddlewareInterface.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-365">
+          <caret line="459" column="87" lean-forward="false" selection-start-line="459" selection-start-column="87" selection-end-line="459" selection-end-column="87" />
+          <folding />
         </state>
       </provider>
     </entry>

@@ -9,6 +9,7 @@ import middleware.resource_managers.ResourceManagerTypes;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Vector;
 
 /**
@@ -112,6 +113,9 @@ public class MiddlewareInterface implements ResourceManager {
             int givenCustomerId = userRmManager.getResourceManager().newCustomer(rmTransId); // create the customer first at the others rm
 
             MiddlewareCustomerDatabase.getInstance().createCustomer(givenCustomerId);
+            this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                middlewareCustomerDatabase.deleteCustomer(givenCustomerId);
+            });
             return givenCustomerId;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
@@ -130,6 +134,9 @@ public class MiddlewareInterface implements ResourceManager {
 
             if(newCustomerSuccess) {
                 MiddlewareCustomerDatabase.getInstance().createCustomer(cid);
+                this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                    middlewareCustomerDatabase.deleteCustomer(cid);
+                });
             }
 
             return newCustomerSuccess;
@@ -146,7 +153,12 @@ public class MiddlewareInterface implements ResourceManager {
             int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.FLIGHTS_ONLY);
 
             // make sure to delete from reservations
-            MiddlewareCustomerDatabase.getInstance().deleteFlight(flightNum);
+            Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteFlight(flightNum);
+            this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                for(int customerId: affectedCustomers) {
+                    middlewareCustomerDatabase.addReservedFlight(customerId, flightNum);
+                }
+            });
 
             return this.middleware
                     .getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY)
@@ -165,7 +177,12 @@ public class MiddlewareInterface implements ResourceManager {
             int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
 
             // make sure to delete from reservations
-            MiddlewareCustomerDatabase.getInstance().deleteCar("car-" + location);
+            Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteCar(location);
+            this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                for(int customerId: affectedCustomers) {
+                    middlewareCustomerDatabase.addReservedCar(customerId, "car-" + location);
+                }
+            });
 
             return this.middleware
                     .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
@@ -184,7 +201,12 @@ public class MiddlewareInterface implements ResourceManager {
             int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
 
             // make sure to delete from reservations
-            MiddlewareCustomerDatabase.getInstance().deleteCar("room-" + location);
+            Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteRoom(location);
+            this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                for(int customerId: affectedCustomers) {
+                    middlewareCustomerDatabase.addReservedRoom(customerId, location);
+                }
+            });
 
             return this.middleware
                     .getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY)
@@ -207,18 +229,19 @@ public class MiddlewareInterface implements ResourceManager {
 
             if(deleteCustomerSuccess) {
                 CustomerReservations custReservations = MiddlewareCustomerDatabase.getInstance().getReservations(customer);
+
                 // give back rooms
                 int roomTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
                 AbstractRemoteResourceManager roomRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY);
                 for(String roomKey: custReservations.getBookedRooms()) {
-                    roomRmManager.getResourceManager().updateReservedQuantities(roomTransId, roomKey, 1);
+                    roomRmManager.getResourceManager().updateReservedQuantities(roomTransId, "room-" + roomKey, 1);
                 }
 
                 // give back cars
                 int carTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
                 AbstractRemoteResourceManager carRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY);
                 for(String carKey: custReservations.getBookedCars()) {
-                    carRmManager.getResourceManager().updateReservedQuantities(carTransId, carKey, 1);
+                    carRmManager.getResourceManager().updateReservedQuantities(carTransId, "car-" + carKey, 1);
                 }
 
                 // give back flights
@@ -228,6 +251,9 @@ public class MiddlewareInterface implements ResourceManager {
                     flightRmManager.getResourceManager().updateReservedQuantities(flightTransId, "flight-" + String.valueOf(flightKey), 1);
                 }
 
+                this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                    middlewareCustomerDatabase.createCustomer(customer, new CustomerReservations(custReservations));
+                });
                 MiddlewareCustomerDatabase.getInstance().deleteCustomer(customer);
             }
 
@@ -384,6 +410,9 @@ public class MiddlewareInterface implements ResourceManager {
 
             if(reserveFlightSuccess) {
                 MiddlewareCustomerDatabase.getInstance().addReservedFlight(customer, flightNumber);
+                middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                    middlewareCustomerDatabase.deleteReservedFlight(customer, flightNumber);
+                });
             }
 
             return reserveFlightSuccess;
@@ -404,6 +433,9 @@ public class MiddlewareInterface implements ResourceManager {
 
             if(reserveCarSuccess) {
                 MiddlewareCustomerDatabase.getInstance().addReservedCar(customer, location);
+                middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                    middlewareCustomerDatabase.deleteReservedCar(customer, location);
+                });
             }
 
             return reserveCarSuccess;
@@ -424,6 +456,9 @@ public class MiddlewareInterface implements ResourceManager {
 
             if(reserveRoomSuccess) {
                 MiddlewareCustomerDatabase.getInstance().addReservedRoom(customer, locationd);
+                middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                    middlewareCustomerDatabase.deleteReservedRoom(customer, locationd);
+                });
             }
 
             return reserveRoomSuccess;

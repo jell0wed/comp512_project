@@ -5,6 +5,7 @@ import ResImpl.exceptions.AbortedTransactionException;
 import ResImpl.exceptions.InvalidTransactionException;
 import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
+import middleware.MiddlewareCustomerDatabase;
 import middleware.MiddlewareServer;
 import middleware.resource_managers.ResourceManagerTypes;
 
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class DistributedTransactionManager {
     private volatile int transactionCounter = 0;
@@ -77,6 +79,14 @@ public class DistributedTransactionManager {
         // make sure to abort on all resource managers
         DistributedTransaction distTrans = this.openTransactions.get(transId);
         distTrans.timeToLive.terminate();
+
+        // undo reservation stuff
+        while(!distTrans.reservationUndoLogs.isEmpty()) {
+            Consumer<MiddlewareCustomerDatabase> undoFn = distTrans.reservationUndoLogs.pop();
+            undoFn.accept(MiddlewareCustomerDatabase.getInstance());
+        }
+
+        // abort at each rms
         for(ResourceManagerTypes rmType: distTrans.enlistedRms.keySet()) {
             ResourceManager rm = this.middleware.getRemoteResourceManagerForType(rmType).getResourceManager();
             int rmTransId = distTrans.enlistedRms.get(rmType);
@@ -115,6 +125,15 @@ public class DistributedTransactionManager {
 
         // return appropriate transaction id
         return rmTransId;
+    }
+
+    public synchronized void appendReservationUndoLog(int transId, Consumer<MiddlewareCustomerDatabase> undoFn) throws InvalidTransactionException {
+        if(!transactionExists(transId)) {
+            throw new InvalidTransactionException("Transaction does not exists.");
+        }
+
+        DistributedTransaction distTrans = this.openTransactions.get(transId);
+        distTrans.reservationUndoLogs.push(undoFn);
     }
 
     public synchronized void ensureTransactionExists(int transId) throws InvalidTransactionException {

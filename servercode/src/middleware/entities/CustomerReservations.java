@@ -11,6 +11,16 @@ public class CustomerReservations {
     private Collection<String> bookedRooms = new LinkedList<>();
     private Collection<String> bookedCars = new LinkedList<>();
 
+    public CustomerReservations() {
+
+    }
+
+    public CustomerReservations(CustomerReservations src) {
+        this.bookedFlights = new LinkedList<>(src.bookedFlights);
+        this.bookedRooms = new LinkedList<>(src.bookedRooms);
+        this.bookedCars = new LinkedList<>(src.bookedCars);
+    }
+
     public void addBookedFlight(Integer flightId) {
         this.bookedFlights.add(flightId);
     }
@@ -35,15 +45,15 @@ public class CustomerReservations {
         return bookedCars;
     }
 
-    public void removeRoom(String roomKey) {
-        this.bookedRooms.remove(roomKey);
+    public boolean removeRoom(String roomKey) {
+        return this.bookedRooms.remove(roomKey);
     }
 
-    public void removeFlight(int no) {
-        this.bookedFlights.remove(no);
+    public boolean removeFlight(int no) {
+        return this.bookedFlights.remove(no);
     }
 
-    public void removeCars(String carKey) {
-        this.bookedCars.remove(carKey);
+    public boolean removeCars(String carKey) {
+        return this.bookedCars.remove(carKey);
     }
 }
