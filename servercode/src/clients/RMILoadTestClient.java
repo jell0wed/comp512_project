@@ -5,8 +5,9 @@ import ResInterface.ResourceManager;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
+import java.util.concurrent.*;
 
-public class RMILoadTestClient {
+public class RMILoadTestClient implements Runnable {
     final String REGISTRY_HOST = "localhost";
     final int    REGISTRY_POST =  1099;
     final String REGISTRY_NAME = "rmMiddleware";
@@ -15,25 +16,28 @@ public class RMILoadTestClient {
     private Timer requestTimer;
     private long startTime = -1;
     private ResourceManager rm;
+    private float requestPerSeconds;
     private int requestCount = 0,
                 earlyAbort = 0,
                 requestErrors = 0,
                 lowestReponseTime = 999999,
                 highestReponseTime = 0,
-                stopRequestCount = 10;
+                stopRequestCount = 1000,
+                clientIdentifier;
     private long cumulativeRequestTimes;
 
     public static void main(String[] args) {
-//        if(args.length != 1) {
-//            throw new RuntimeException("Usage: <requests per seconds>");
-//        }
-//
-//        int requestPerSeconds = Integer.valueOf(args[0]);
-        RMILoadTestClient client = new RMILoadTestClient(2);
+        RMILoadTestClient client = new RMILoadTestClient(50.0f, 0);
+        client.run();
     }
 
-    public RMILoadTestClient(int requestPerSeconds) {
-        System.out.println("Starting load client with " + requestPerSeconds + " requests/s");
+    public RMILoadTestClient(float _requestPerSeconds, int _clientIdentifier) {
+        clientIdentifier = _clientIdentifier;
+        requestPerSeconds = _requestPerSeconds;
+    }
+
+    public void run() {
+        System.out.println("Starting load client #" + clientIdentifier + " with " + requestPerSeconds + " requests/s");
 
         try {
             Registry registry = LocateRegistry.getRegistry(REGISTRY_HOST, REGISTRY_POST);
@@ -41,24 +45,34 @@ public class RMILoadTestClient {
 
             lastRequestDone = true;
 
-            long sleepTime = 1000/requestPerSeconds;
+            long sleepTime = 0;
+            if(requestPerSeconds >= 1.0f) {
+                sleepTime = 1000 / (int)requestPerSeconds;
+            } else {
+                sleepTime = 1000 * (int)(1/requestPerSeconds);
+            }
 
-            System.out.println("Starting load test in a 100ms");
+            System.out.println("#" + clientIdentifier + " Running load test..");
+
+            ExecutorService es = Executors.newCachedThreadPool();
 
             while(true) {
-                Thread request = new Thread(new RMILoadTestRequest());
-                request.run();
-
                 if(requestCount >= stopRequestCount) {
                     break;
                 }
 
+                Thread request = new Thread(new RMILoadTestRequest());
+                es.execute(request);
+
                 Thread.sleep(sleepTime);
             }
 
+            es.shutdown();
+            boolean finshed = es.awaitTermination(1, TimeUnit.MINUTES);
+
             this.printAnalysis();
         } catch(Exception e) {
-            System.err.println("Client error happened while running tests: " + e.toString());
+            System.err.println("#" + clientIdentifier + " Client error happened while running tests: " + e.toString());
             e.printStackTrace(System.err);
         }
     }
@@ -70,18 +84,21 @@ public class RMILoadTestClient {
 
         long difference = System.currentTimeMillis() - startTime;
 
-        System.out.println("+" + difference + "ms " + string);
+        System.out.println("#" + clientIdentifier + " " + difference + "ms " + string);
     }
 
     public void printAnalysis() {
-        System.out.println("---- REPORT ----");
+        System.out.println("---- REPORT #" + clientIdentifier + " ----");
+
+        int successfullRequests = requestCount - earlyAbort - requestErrors;
 
         System.out.println("Requests: " + requestCount);
+        System.out.println("Success: " + successfullRequests + " (" + printFormattedPercentage(successfullRequests, requestCount) + "%)");
         System.out.println("Early abort: " + earlyAbort + " (" + printFormattedPercentage(earlyAbort, requestCount) + "%)");
         System.out.println("Errored requests: " + requestErrors + " (" + printFormattedPercentage(requestErrors, requestCount) + "%)");
-        System.out.println("Average response time: " + (float)cumulativeRequestTimes/(requestCount));
-        System.out.println("Highest reponse time: " + lowestReponseTime);
-        System.out.println("Lowest reponse time: " + highestReponseTime);
+        System.out.println("Average response time: " + (float)cumulativeRequestTimes/(requestCount) + "ms");
+        System.out.println("Highest reponse time: " + highestReponseTime + "ms");
+        System.out.println("Lowest reponse time: " + lowestReponseTime + "ms");
     }
 
     public float printFormattedPercentage(int q1, int q2) {
@@ -101,7 +118,7 @@ public class RMILoadTestClient {
                 return;
             }
 
-            //timeAwareLogging("Initiating request (" + requestCount + "/" + stopRequestCount + ")");
+            timeAwareLogging("Initiating request (" + requestCount + "/" + stopRequestCount + ")");
 
             lastRequestDone = false;
             long requestStartTime = System.currentTimeMillis();
@@ -138,16 +155,15 @@ public class RMILoadTestClient {
 
             } catch(Exception e) {
                 requestErrors++;
-                System.err.println("Client exception: " + e.toString());
+                System.err.println("#" + clientIdentifier + " Client exception: " + e.toString());
                 e.printStackTrace();
-
             } finally {
                 lastRequestDone = true;
 
                 requestEndTime = System.currentTimeMillis();
 
                 long requestTime = (requestEndTime - requestStartTime);
-                //timeAwareLogging("Request time: " + requestTime + "ms");
+                timeAwareLogging("Request time: " + requestTime + "ms");
 
                 if(requestTime < lowestReponseTime) {
                     lowestReponseTime = (int)requestTime;
