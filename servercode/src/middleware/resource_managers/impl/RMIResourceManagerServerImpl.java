@@ -5,6 +5,8 @@ import ResInterface.ResourceManager;
 import middleware.exceptions.MiddlewareBaseException;
 import middleware.resource_managers.AbstractRemoteResourceManager;
 import middleware.resource_managers.RemoteResourceManagerImplementationTypes;
+import org.apache.commons.collections4.map.AbstractReferenceMap;
+import org.apache.commons.collections4.map.ReferenceMap;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -62,5 +64,26 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
     @Override
     public ResourceManager getResourceManager() {
         return this.proxyRMIInterface;
+    }
+
+    private static void gc() {
+        try {
+            // trigger GC
+            byte[][] tooLarge = new byte[Integer.MAX_VALUE][Integer.MAX_VALUE];
+        } catch (OutOfMemoryError ex) {
+            System.gc(); // ignore
+        }
+    }
+
+    public static void main(String[] args) {
+        ReferenceMap map = new ReferenceMap(AbstractReferenceMap.ReferenceStrength.WEAK, AbstractReferenceMap.ReferenceStrength.WEAK);
+        map.put(new Integer(1), new Integer(1));
+
+        gc();
+
+        Integer i = new Integer(1);
+        System.out.print("Contains elem after gc = " + map.containsKey(i));
+
+
     }
 }

@@ -1,7 +1,7 @@
-grant codeBase "file:/Users/jpoisson/Desktop/comp512/servercode/" {
+grant codeBase "file:/Users/jpoisson/Workspaces/McGill/comp512_project/servercode/" {
     permission java.security.AllPermission;
 };
 
-grant codeBase "file:/Users/jpoisson/Desktop/comp512/servercode/out/" {
+grant codeBase "file:/Users/jpoisson/Workspaces/McGill/comp512_project/servercode/out_gradle/" {
     permission java.security.AllPermission;
 };

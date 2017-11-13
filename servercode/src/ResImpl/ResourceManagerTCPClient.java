@@ -222,4 +222,19 @@ public class ResourceManagerTCPClient implements ResourceManager, Remote {
 
         return updateQtyResp.asSuccessFailureResponse().success;
     }
+
+    @Override
+    public int startTransaction() {
+        return 0;
+    }
+
+    @Override
+    public boolean commitTransaction(int transId) {
+        return false;
+    }
+
+    @Override
+    public boolean abortTransaction(int transId) {
+        return false;
+    }
 }

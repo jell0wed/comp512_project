@@ -5,6 +5,7 @@ import middleware.resource_managers.AbstractRemoteResourceManager;
 import middleware.resource_managers.RemoteResourceManagerFactory;
 import middleware.resource_managers.RemoteResourceManagerImplementationTypes;
 import middleware.resource_managers.ResourceManagerTypes;
+import middleware.transactions.DistributedTransactionManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +21,7 @@ public abstract class MiddlewareServer {
     private Collection<String> availableRMs;
     private Hashtable<ResourceManagerTypes, AbstractRemoteResourceManager> remoteResourceManagers;
     private MiddlewareInterface middlewareInterface;
+    private DistributedTransactionManager transactionMananger;
 
     protected abstract void initializeServer();
 
@@ -27,6 +29,7 @@ public abstract class MiddlewareServer {
         remoteRMFactory = new RemoteResourceManagerFactory(implType);
         this.availableRMs = Arrays.asList(availRMs);
         this.middlewareInterface = new MiddlewareInterface(this);
+        this.transactionMananger = new DistributedTransactionManager(this);
 
         this.initializeRemoteResourceManagers();
         this.initializeServer();
@@ -49,12 +52,16 @@ public abstract class MiddlewareServer {
         this.remoteResourceManagers.put(ResourceManagerTypes.OTHERS, remoteRMFactory.createRemoteResourceManager(rmStrs.pop()));
     }
 
-    protected AbstractRemoteResourceManager getRemoteResourceManagerForType(ResourceManagerTypes type) {
+    public AbstractRemoteResourceManager getRemoteResourceManagerForType(ResourceManagerTypes type) {
         if (!this.remoteResourceManagers.containsKey(type)) {
             throw new MiddlewareBaseException("No remote resource manager for type " + type.toString());
         }
 
         return this.remoteResourceManagers.get(type);
+    }
+
+    protected DistributedTransactionManager getTransactionManager() {
+        return this.transactionMananger;
     }
 
     protected Collection<AbstractRemoteResourceManager> getAllRemoteResourceManager() {
