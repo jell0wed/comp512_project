@@ -37,7 +37,7 @@ public class DistributedTransactionManager {
                 Trace.info(e.getMessage());
             }
             return null;
-        }, 10 * 1000);
+        }, 10 * 60 * 1000);
         transaction.timeToLive.call(0);
 
         this.openTransactions.put(transId, transaction);

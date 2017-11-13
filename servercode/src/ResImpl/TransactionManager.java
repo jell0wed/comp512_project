@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class TransactionManager {
-    private final Map<Integer, Stack<Consumer<RMHashtable>>> undoLogMap = new Hashtable<Integer, Stack<Consumer<RMHashtable>>>();
+    private final Map<Integer, Stack<Consumer<ResourceManagerDatabase>>> undoLogMap = new Hashtable<Integer, Stack<Consumer<ResourceManagerDatabase>>>();
     private final Set<Integer> openTransactions = new HashSet<Integer>();
     private final Set<Integer> abortedTransactions = new HashSet<>();
     private LockManager lockManager = new LockManager();
@@ -23,12 +23,12 @@ public class TransactionManager {
         return transId;
     }
 
-    public synchronized void appendUndoLog(Integer transId, Consumer<RMHashtable> undoFn) {
+    public synchronized void appendUndoLog(Integer transId, Consumer<ResourceManagerDatabase> undoFn) {
         if(!this.doesTransactionExists(transId)) {
             return;
         }
 
-        Stack<Consumer<RMHashtable>> transUndoLog = this.undoLogMap.get(transId);
+        Stack<Consumer<ResourceManagerDatabase>> transUndoLog = this.undoLogMap.get(transId);
         transUndoLog.push(undoFn);
         this.undoLogMap.put(transId, transUndoLog);
     }
@@ -72,10 +72,10 @@ public class TransactionManager {
         try {
             Trace.info("Abort transaction id " + transId);
             // unroll the undo log
-            Stack<Consumer<RMHashtable>> transUndoLog = this.undoLogMap.get(transId);
+            Stack<Consumer<ResourceManagerDatabase>> transUndoLog = this.undoLogMap.get(transId);
             while(!transUndoLog.isEmpty()) {
-                Consumer<RMHashtable> undoOp = transUndoLog.pop();
-                undoOp.accept(rmDb.m_itemHT);
+                Consumer<ResourceManagerDatabase> undoOp = transUndoLog.pop();
+                undoOp.accept(rmDb);
                 Trace.info("Unrolled operation for trans " + transId);
             }
 
