@@ -8,7 +8,7 @@ public class RMILoadTestMultipleClients {
     private ArrayList<RMILoadTestClient> clients;
 
     public static void main(String[] args) {
-        RMILoadTestMultipleClients loadTest = new RMILoadTestMultipleClients(2, 10);
+        RMILoadTestMultipleClients loadTest = new RMILoadTestMultipleClients(3, 150);
         loadTest.run();
     }
 
