@@ -1,6 +1,7 @@
 package protocol.requests.impl;
 
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import protocol.requests.BaseTCPRequest;
 import protocol.requests.TCPRequestTypes;
@@ -26,7 +27,7 @@ public class AddCarsRequest extends BaseTCPRequest {
     }
 
     @Override
-    public BaseTCPResponse executeRequest(ResourceManager resManager) {
+    public BaseTCPResponse executeRequest(ResourceManager resManager) throws TransactionException {
         try {
             boolean success = resManager.addCars(this.id, this.location, this.numCars, this.price);
             return new SuccessFailureResponse(success);

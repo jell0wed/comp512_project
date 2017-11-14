@@ -1,5 +1,6 @@
 package protocol.requests.impl;
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import middleware.MiddlewareServer;
 import protocol.requests.BaseTCPRequest;
@@ -24,7 +25,7 @@ public class ReserveFlightRequest extends BaseTCPRequest {
     }
 
     @Override
-    public BaseTCPResponse executeRequest(ResourceManager resManager) {
+    public BaseTCPResponse executeRequest(ResourceManager resManager) throws TransactionException {
         try {
             boolean success = resManager.reserveFlight(this.id, this.customerId, this.flightId);
             return new SuccessFailureResponse(success);

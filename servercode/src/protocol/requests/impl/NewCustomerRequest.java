@@ -1,5 +1,6 @@
 package protocol.requests.impl;
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import middleware.MiddlewareServer;
 import protocol.requests.BaseTCPRequest;
@@ -19,7 +20,7 @@ public class NewCustomerRequest extends BaseTCPRequest {
     }
 
     @Override
-    public BaseTCPResponse executeRequest(ResourceManager resManager) {
+    public BaseTCPResponse executeRequest(ResourceManager resManager) throws TransactionException {
         try {
             int cid = resManager.newCustomer(this.id);
             return new IntegerResponse(cid);

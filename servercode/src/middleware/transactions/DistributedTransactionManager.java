@@ -37,7 +37,7 @@ public class DistributedTransactionManager {
                 Trace.info(e.getMessage());
             }
             return null;
-        }, 10 * 1000);
+        }, 10 * 60 * 1000);
         transaction.timeToLive.call(0);
 
         this.openTransactions.put(transId, transaction);
@@ -66,6 +66,8 @@ public class DistributedTransactionManager {
                 rm.commitTransaction(rmTransId);
             } catch (RemoteException e) {
                 Trace.error("Error while commiting transaction on " + rmType);
+            } catch (TransactionException e) {
+                Trace.error("Transaction exception while commiting transaction");
             }
         }
     }
@@ -95,6 +97,8 @@ public class DistributedTransactionManager {
                 rm.abortTransaction(rmTransId);
             } catch (RemoteException e) {
                 Trace.error("Error while aborting transaction on " + rmType);
+            } catch (TransactionException e) {
+                Trace.error("Transaction exception while aborting");
             }
         }
 

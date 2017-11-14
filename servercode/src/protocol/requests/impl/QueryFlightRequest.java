@@ -1,5 +1,6 @@
 package protocol.requests.impl;
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import middleware.MiddlewareServer;
 import protocol.requests.BaseTCPRequest;
@@ -22,7 +23,7 @@ public class QueryFlightRequest extends BaseTCPRequest {
     }
 
     @Override
-    public BaseTCPResponse executeRequest(ResourceManager resManager) {
+    public BaseTCPResponse executeRequest(ResourceManager resManager) throws TransactionException {
         try {
             int resp = resManager.queryFlight(this.id, this.flightNo);
             return new IntegerResponse(resp);

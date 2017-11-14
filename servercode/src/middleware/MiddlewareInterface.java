@@ -55,6 +55,15 @@ public class MiddlewareInterface implements ResourceManager {
     }
 
     @Override
+    public boolean shutdown() throws RemoteException {
+        for(AbstractRemoteResourceManager rm : this.middleware.getAllRemoteResourceManager()) {
+            rm.getResourceManager().shutdown();
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);

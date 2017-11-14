@@ -10,7 +10,7 @@ import java.util.*;
  * Created by jpoisson on 2017-10-05.
  */
 public class ResourceManagerDatabase {
-    RMHashtable m_itemHT = new RMHashtable();
+    private RMHashtable m_itemHT = new RMHashtable();
     private TransactionManager transManager;
 
     ResourceManagerDatabase(TransactionManager transManager) {
@@ -26,23 +26,30 @@ public class ResourceManagerDatabase {
     // Writes a data item
     private void writeData(int id, String key, RMItem value ) throws TransactionException {
         this.transManager.lock(id, key, LockManager.WRITE);
-        final RMItem beforeImage = this.readData(id, key);
+        final RMItem beforeImage = ((RMItem) m_itemHT.get(key));
+        if(beforeImage == null) { // is it an insertion?
+            this.transManager.appendUndoLog(id, rmDb -> {
+                rmDb.m_itemHT.remove(key);
+            });
+        } else {
+            this.transManager.appendUndoLog(id, rmDb -> {
+                rmDb.m_itemHT.put(key, beforeImage.makeACopy());
+            });
+        }
 
         m_itemHT.put(key, value);
-        this.transManager.appendUndoLog(id, rmHashTable -> {
-            rmHashTable.put(key, beforeImage);
-        });
     }
 
     // Remove the item out of storage
     protected RMItem removeData(int id, String key) throws TransactionException {
         this.transManager.lock(id, key, LockManager.WRITE);
-        final RMItem beforeValue = this.readData(id, key);
 
         RMItem removed = (RMItem)m_itemHT.remove(key);
-        this.transManager.appendUndoLog(id, rmHashTable -> {
-            rmHashTable.put(key, beforeValue);
-        });
+        if(removed != null) {
+            this.transManager.appendUndoLog(id, rmDb -> {
+                rmDb.m_itemHT.put(key, removed.makeACopy());
+            });
+        }
 
         return removed;
     }
@@ -114,12 +121,17 @@ public class ResourceManagerDatabase {
             Trace.warn("RM::reserveItem( " + id + ", " + customerID + ", " + key+", " + location+") failed--No more items" );
             return false;
         } else {
-            cust.reserve( key, location, item.getPrice());
+            cust.reserve( key, location, item.getPrice()); // we dont care as customers are manager at middleware ;)
             writeData( id, cust.getKey(), cust );
 
             // decrease the number of available items in the storage
             item.setCount(item.getCount() - 1);
             item.setReserved(item.getReserved()+1);
+
+            this.transManager.appendUndoLog(id, rmDb -> {
+                item.setCount(item.getCount() + 1);
+                item.setReserved(item.getReserved() - 1);
+            });
 
             Trace.info("RM::reserveItem( " + id + ", " + customerID + ", " + key + ", " +location+") succeeded" );
             return true;
@@ -425,8 +437,14 @@ public class ResourceManagerDatabase {
             return false;
         } else {
             // decrease the number of available items in the storage
+            this.transManager.lock(id, key, LockManager.WRITE);
             item.setCount(item.getCount() + incQty);
             item.setReserved(item.getReserved() - incQty);
+
+            this.transManager.appendUndoLog(id, rmDb -> {
+                item.setCount(item.getCount() - incQty);
+                item.setReserved(item.getReserved() + incQty);
+            });
 
             Trace.info("RM::reserveItem( " + id + ", " + key + ") succeeded" );
             return true;

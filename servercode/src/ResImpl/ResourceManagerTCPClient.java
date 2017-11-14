@@ -237,4 +237,10 @@ public class ResourceManagerTCPClient implements ResourceManager, Remote {
     public boolean abortTransaction(int transId) {
         return false;
     }
+
+    @Override
+    public boolean shutdown() throws RemoteException {
+        System.exit(0);
+        return true;
+    }
 }

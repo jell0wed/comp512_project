@@ -1,6 +1,8 @@
 package clients;
 
 import ResInterface.*;
+
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.RMISecurityManager;
@@ -572,7 +574,46 @@ public class RMIInteractiveClient
                         e.printStackTrace();
                     }
                     break;
-
+                case 23: // start
+                    try {
+                        int transId = rm.startTransaction();
+                        System.out.println("Started transaction with id = " + transId);
+                    } catch (Exception e) {
+                        System.out.println("EXCEPTION:");
+                        System.out.println(e.getMessage());
+                        e.printStackTrace();
+                    }
+                    break;
+                case 24: // commit
+                    if(arguments.size() != 2) {
+                        obj.wrongNumber();
+                        break;
+                    }
+                    try {
+                        Id = obj.getInt(arguments.elementAt(1));
+                        rm.commitTransaction(Id);
+                        System.out.println("Commited transaction " + Id);
+                    } catch (Exception e) {
+                        System.out.println("EXCEPTION:");
+                        System.out.println(e.getMessage());
+                        e.printStackTrace();
+                    }
+                    break;
+                case 25: // abort
+                    if(arguments.size() != 2) {
+                        obj.wrongNumber();
+                        break;
+                    }
+                    try {
+                        Id = obj.getInt(arguments.elementAt(1));
+                        rm.abortTransaction(Id);
+                        System.out.println("Aborted transaction " + Id);
+                    } catch (Exception e) {
+                        System.out.println("EXCEPTION:");
+                        System.out.println(e.getMessage());
+                        e.printStackTrace();
+                    }
+                    break;
                 default:
                     System.out.println("The interface does not support this command.");
                     break;
@@ -639,6 +680,12 @@ public class RMIInteractiveClient
             return 21;
         else if (argument.compareToIgnoreCase("newcustomerid")==0)
             return 22;
+        else if (argument.compareToIgnoreCase("start")==0)
+            return 23;
+        else if (argument.compareToIgnoreCase("commit")==0)
+            return 24;
+        else if (argument.compareToIgnoreCase("abort")==0)
+            return 25;
         else
             return 666;
 
