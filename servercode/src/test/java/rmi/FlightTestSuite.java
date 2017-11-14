@@ -1,5 +1,6 @@
 package rmi;
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import junit.framework.TestSuite;
 import org.junit.Assert;
@@ -26,7 +27,7 @@ public class FlightTestSuite extends TestSuite {
     private static final int TEST_FLIGHTOPERATION2_FLIGHT_PRICE = 200;
 
     @Test
-    public void testFlightTransactionOperations() throws RemoteException {
+    public void testFlightTransactionOperations() throws RemoteException, TransactionException {
         // test a normal commit
         int transId = rm.startTransaction();
         rm.addFlight(transId, TEST_FLIGHTOPERATION_FLIGHT_NO, TEST_FLIGHTOPERATION_FLIGHT_NUMSEATS, TEST_FLIGHTOPERATION_FLIGHT_PRICE);
@@ -53,7 +54,7 @@ public class FlightTestSuite extends TestSuite {
     private static final int TEST_FLIGHTRESERVATION_FLIGHT_PRICE = 100;
 
     @Test
-    public void testFlightTransactionReservations() throws RemoteException {
+    public void testFlightTransactionReservations() throws RemoteException, TransactionException {
         // create a customer
         int transId = rm.startTransaction();
         rm.newCustomer(transId, TEST_FLIGHTRESERVATION_CUSTOMER_ID);
@@ -87,7 +88,7 @@ public class FlightTestSuite extends TestSuite {
     private static final int TEST_FLIGHTRESERVATIONOPERATION_FLIGHT_NUMSEATS = 10;
     private static final int TEST_FLIGHTRESERVATIONOPERATION_FLIGHT_PRICE = 100;
     @Test
-    public void testFLIGHTTransactionReservationsOperations() throws RemoteException {
+    public void testFLIGHTTransactionReservationsOperations() throws RemoteException, TransactionException {
         // create a customer
         int transId = rm.startTransaction();
         rm.newCustomer(transId, TEST_FLIGHTRESERVATIONOPERATION_CUSTOMER_ID);

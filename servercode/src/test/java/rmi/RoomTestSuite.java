@@ -1,5 +1,6 @@
 package rmi;
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import junit.framework.TestSuite;
 import org.junit.Assert;
@@ -26,7 +27,7 @@ public class RoomTestSuite extends TestSuite {
     private static final int TEST_ROOMOPERATION2_ROOM_PRICE = 200;
 
     @Test
-    public void testROOMTransactionOperations() throws RemoteException {
+    public void testROOMTransactionOperations() throws RemoteException, TransactionException {
         // test a normal commit
         int transId = rm.startTransaction();
         rm.addRooms(transId, TEST_ROOMOPERATION_ROOM_LOCATION, TEST_ROOMOPERATION_ROOM_NUMROOM, TEST_ROOMOPERATION_ROOM_PRICE);
@@ -53,7 +54,7 @@ public class RoomTestSuite extends TestSuite {
     private static final int TEST_ROOMRESERVATION_ROOM_PRICE = 100;
 
     @Test
-    public void testROOMTransactionReservations() throws RemoteException {
+    public void testROOMTransactionReservations() throws RemoteException, TransactionException {
         // create a customer
         int transId = rm.startTransaction();
         rm.newCustomer(transId, TEST_ROOMRESERVATION_CUSTOMER_ID);
@@ -87,7 +88,7 @@ public class RoomTestSuite extends TestSuite {
     private static final int TEST_ROOMRESERVATIONOPERATION_ROOM_NUMROOM = 10;
     private static final int TEST_ROOMRESERVATIONOPERATION_ROOM_PRICE = 100;
     @Test
-    public void testROOMTransactionReservationsOperations() throws RemoteException {
+    public void testROOMTransactionReservationsOperations() throws RemoteException, TransactionException {
         // create a customer
         int transId = rm.startTransaction();
         rm.newCustomer(transId, TEST_ROOMRESERVATIONOPERATION_CUSTOMER_ID);

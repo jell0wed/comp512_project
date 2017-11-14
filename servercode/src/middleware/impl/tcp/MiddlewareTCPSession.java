@@ -2,6 +2,7 @@ package middleware.impl.tcp;
 
 
 import ResImpl.Trace;
+import ResImpl.exceptions.TransactionException;
 import middleware.exceptions.MiddlewareBaseException;
 import protocol.requests.BaseTCPRequest;
 import protocol.responses.BaseTCPResponse;
@@ -46,7 +47,12 @@ class MiddlewareTCPSession {
                     BaseTCPRequest request = (BaseTCPRequest) requestObj;
 
                     if(request != null) {
-                        BaseTCPResponse response = request.executeRequest(this.server.getMiddlewareInterface());
+                        BaseTCPResponse response = null;
+                        try {
+                            response = request.executeRequest(this.server.getMiddlewareInterface());
+                        } catch (TransactionException e) {
+                            Trace.error(e.getMessage());
+                        }
                         this.objOutStream.writeObject(response);
                     } else {
                         Trace.error("Received invalid object");

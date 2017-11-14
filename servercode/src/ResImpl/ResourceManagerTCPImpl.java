@@ -55,7 +55,12 @@ public class ResourceManagerTCPImpl implements ResourceManager, Remote {
                         BaseTCPRequest request = (BaseTCPRequest) requestObj;
 
                         if(request != null) {
-                            BaseTCPResponse response = request.executeRequest(this);
+                            BaseTCPResponse response = null;
+                            try {
+                                response = request.executeRequest(this);
+                            } catch (TransactionException e) {
+                                Trace.error(e.getMessage());
+                            }
                             clientObjOutStream.writeObject(response);
                         } else {
                             Trace.error("Invalid request");
@@ -283,5 +288,11 @@ public class ResourceManagerTCPImpl implements ResourceManager, Remote {
     @Override
     public boolean abortTransaction(int transId) {
         return false;
+    }
+
+    @Override
+    public boolean shutdown() throws RemoteException {
+        System.exit(0);
+        return true;
     }
 }

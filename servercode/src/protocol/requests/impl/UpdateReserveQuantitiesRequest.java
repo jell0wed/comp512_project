@@ -1,5 +1,6 @@
 package protocol.requests.impl;
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import protocol.requests.BaseTCPRequest;
 import protocol.requests.TCPRequestTypes;
@@ -23,7 +24,7 @@ public class UpdateReserveQuantitiesRequest extends BaseTCPRequest {
     }
 
     @Override
-    public BaseTCPResponse executeRequest(ResourceManager resManager) {
+    public BaseTCPResponse executeRequest(ResourceManager resManager) throws TransactionException {
         try {
             boolean success = resManager.updateReservedQuantities(this.id, this.key, this.incQty);
             return new SuccessFailureResponse(success);

@@ -1,6 +1,7 @@
 package protocol.requests;
 
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import protocol.responses.BaseTCPResponse;
 
@@ -18,5 +19,5 @@ public abstract class BaseTCPRequest implements Serializable {
         this.type = type;
     }
 
-    public abstract BaseTCPResponse executeRequest(ResourceManager resManager);
+    public abstract BaseTCPResponse executeRequest(ResourceManager resManager) throws TransactionException;
 }

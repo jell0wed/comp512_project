@@ -1,5 +1,6 @@
 package rmi;
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -29,7 +30,7 @@ public class CustomerTestSuite {
     private static final int TEST_CUSTOMER_DELETE_FLIGHT_PRICE = 300;
 
     @Test
-    public void testDeleteCustomer() throws RemoteException {
+    public void testDeleteCustomer() throws RemoteException, TransactionException {
         // create new customer
         int transId = rm.startTransaction();
         rm.newCustomer(transId, TEST_CUSTOMER_DELETE_CUSTOMER_ID);

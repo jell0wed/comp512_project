@@ -1,5 +1,6 @@
 package rmi;
 
+import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
 import junit.framework.TestSuite;
 import org.junit.Assert;
@@ -26,7 +27,7 @@ public class CarTestSuite extends TestSuite {
     private static final int TEST_CAROPERATION2_CAR_PRICE = 200;
 
     @Test
-    public void testCarTransactionOperations() throws RemoteException {
+    public void testCarTransactionOperations() throws RemoteException, TransactionException {
         // test a normal commit
         int transId = rm.startTransaction();
         rm.addCars(transId, TEST_CAROPERATION_CAR_LOCATION, TEST_CAROPERATION_CAR_NUMCAR, TEST_CAROPERATION_CAR_PRICE);
@@ -53,7 +54,7 @@ public class CarTestSuite extends TestSuite {
     private static final int TEST_CARRESERVATION_CAR_PRICE = 100;
 
     @Test
-    public void testCarTransactionReservations() throws RemoteException {
+    public void testCarTransactionReservations() throws RemoteException, TransactionException {
         // create a customer
         int transId = rm.startTransaction();
         rm.newCustomer(transId, TEST_CARRESERVATION_CUSTOMER_ID);
@@ -87,7 +88,7 @@ public class CarTestSuite extends TestSuite {
     private static final int TEST_CARRESERVATIONOPERATION_CAR_NUMCAR = 10;
     private static final int TEST_CARRESERVATIONOPERATION_CAR_PRICE = 100;
     @Test
-    public void testCarTransactionReservationsOperations() throws RemoteException {
+    public void testCarTransactionReservationsOperations() throws RemoteException, TransactionException {
         // create a customer
         int transId = rm.startTransaction();
         rm.newCustomer(transId, TEST_CARRESERVATIONOPERATION_CUSTOMER_ID);

@@ -437,6 +437,7 @@ public class ResourceManagerDatabase {
             return false;
         } else {
             // decrease the number of available items in the storage
+            this.transManager.lock(id, key, LockManager.WRITE);
             item.setCount(item.getCount() + incQty);
             item.setReserved(item.getReserved() - incQty);
 
