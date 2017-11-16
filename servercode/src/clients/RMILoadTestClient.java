@@ -112,8 +112,10 @@ public class RMILoadTestClient implements Runnable {
         public RMILoadTestRequest() { super(); }
 
         public String getRandomLocation() {
-            String[] locations = new String[]{"mtl", "nyc", "sf", "paris", "toronto", "vancouver"};
-            return locations[(int)Math.floor(Math.random() * (float)(locations.length - 1))];
+            //String[] locations = new String[]{"mtl", "nyc", "sf", "paris", "toronto", "vancouver", "syndney", "bejing", "tokyo", "amsterdam"};
+            //return locations[(int)Math.floor(Math.random() * (float)(locations.length))];
+
+            return getRandomFlightNumber() + "";
         }
 
         public int getRandomFlightNumber() {
