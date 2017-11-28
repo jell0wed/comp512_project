@@ -1,10 +1,7 @@
 package middleware;
 
 import middleware.exceptions.MiddlewareBaseException;
-import middleware.resource_managers.AbstractRemoteResourceManager;
-import middleware.resource_managers.RemoteResourceManagerFactory;
-import middleware.resource_managers.RemoteResourceManagerImplementationTypes;
-import middleware.resource_managers.ResourceManagerTypes;
+import middleware.resource_managers.*;
 import middleware.transactions.DistributedTransactionManager;
 
 import java.util.Arrays;
@@ -58,6 +55,16 @@ public abstract class MiddlewareServer {
         }
 
         return this.remoteResourceManagers.get(type);
+    }
+
+    public void markDefectiveRemoteResourceManagerForType(ResourceManagerTypes type) {
+        if (!this.remoteResourceManagers.containsKey(type)) {
+            throw new MiddlewareBaseException("No remote resource manager for type " + type.toString());
+        }
+
+        AbstractRemoteResourceManager rm = this.remoteResourceManagers.get(type);
+        rm.setIsAliveStatus(false);
+        this.remoteResourceManagers.put(type, rm);
     }
 
     protected DistributedTransactionManager getTransactionManager() {

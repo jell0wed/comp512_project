@@ -3,14 +3,16 @@ package middleware;
 import ResImpl.Trace;
 import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
+import javafx.util.Pair;
 import middleware.entities.CustomerReservations;
 import middleware.resource_managers.AbstractRemoteResourceManager;
+import middleware.resource_managers.ResourceManagerReplicationTypes;
 import middleware.resource_managers.ResourceManagerTypes;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Vector;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by jpoisson on 2017-09-25.
@@ -63,16 +65,53 @@ public class MiddlewareInterface implements ResourceManager {
         return true;
     }
 
+    private Collection<Map.Entry<ResourceManagerTypes, Integer>> getReplicationTransactionIds(int id, ResourceManagerTypes type) throws TransactionException {
+        LinkedList<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = new LinkedList<>();
+        ResourceManagerTypes replicationType = ResourceManagerReplicationTypes.fromResourceManagerTypes(type).getReplicationType();
+
+        AbstractRemoteResourceManager rm = this.middleware.getRemoteResourceManagerForType(type);
+        AbstractRemoteResourceManager replRm = this.middleware.getRemoteResourceManagerForType(replicationType);
+
+        if(replRm.isAlive()) {
+            int rmReplTransId = this.middleware.getTransactionManager().enlistResourceManager(id, replicationType);
+            transactionIds.add(new AbstractMap.SimpleEntry<ResourceManagerTypes, Integer>(replicationType, rmReplTransId));
+        }
+
+        if(rm.isAlive()) {
+            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, type);
+            transactionIds.add(new AbstractMap.SimpleEntry<ResourceManagerTypes, Integer>(type, rmTransId));
+        }
+
+        if(transactionIds.isEmpty()) {
+            throw new RuntimeException("No alive transaction manager for this type.");
+        }
+
+        return transactionIds;
+    }
+
+    private void handleServerError(ResourceManagerTypes serverType) {
+        this.middleware.markDefectiveRemoteResourceManagerForType(serverType);
+    }
+
     @Override
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.FLIGHTS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.FLIGHTS_ONLY);
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY)
-                    .getResourceManager()
-                    .addFlight(rmTransId, flightNum, flightSeats, flightPrice);
+            Boolean result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .addFlight(transId.getValue(), flightNum, flightSeats, flightPrice);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
+
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return false;
@@ -83,12 +122,21 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean addCars(int id, String location, int numCars, int price) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.CARS_ONLY);
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
-                    .getResourceManager()
-                    .addCars(rmTransId, location, numCars, price);
+            Boolean result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .addCars(transId.getValue(), location, numCars, price);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
+
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return false;
@@ -99,12 +147,21 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.ROOMS_ONLY);
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY)
-                    .getResourceManager()
-                    .addRooms(rmTransId, location, numRooms, price);
+            Boolean result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .addRooms(transId.getValue(), location, numRooms, price);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
+
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return false;
@@ -116,16 +173,28 @@ public class MiddlewareInterface implements ResourceManager {
     public int newCustomer(int id) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.OTHERS);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.OTHERS);
+            Integer firstCustomerId = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    AbstractRemoteResourceManager rm = this.middleware.getRemoteResourceManagerForType(transId.getKey());
+                    if(firstCustomerId == null) {
+                        firstCustomerId = rm.getResourceManager().newCustomer(transId.getValue());
+                    } else {
+                        rm.getResourceManager().newCustomer(transId.getValue(), firstCustomerId);
+                    }
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
-            AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
-            int givenCustomerId = userRmManager.getResourceManager().newCustomer(rmTransId); // create the customer first at the others rm
-
-            MiddlewareCustomerDatabase.getInstance().createCustomer(givenCustomerId);
+            final Integer finalFirstCustomerId = firstCustomerId;
+            MiddlewareCustomerDatabase.getInstance().createCustomer(finalFirstCustomerId);
             this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
-                middlewareCustomerDatabase.deleteCustomer(givenCustomerId);
+                middlewareCustomerDatabase.deleteCustomer(finalFirstCustomerId);
             });
-            return givenCustomerId;
+
+            return finalFirstCustomerId;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return -1;
@@ -136,19 +205,27 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean newCustomer(int id, int cid) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.OTHERS);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.OTHERS);
+            Boolean result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .newCustomer(transId.getValue(), cid);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
-            AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
-            boolean newCustomerSuccess = userRmManager.getResourceManager().newCustomer(rmTransId, cid);
-
-            if(newCustomerSuccess) {
+            if(result) {
                 MiddlewareCustomerDatabase.getInstance().createCustomer(cid);
                 this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
                     middlewareCustomerDatabase.deleteCustomer(cid);
                 });
             }
 
-            return newCustomerSuccess;
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return false;
@@ -159,20 +236,30 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean deleteFlight(int id, int flightNum) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.FLIGHTS_ONLY);
-
-            // make sure to delete from reservations
-            Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteFlight(flightNum);
-            this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
-                for(int customerId: affectedCustomers) {
-                    middlewareCustomerDatabase.addReservedFlight(customerId, flightNum);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.FLIGHTS_ONLY);
+            Boolean result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .deleteFlight(transId.getValue(), flightNum);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
                 }
-            });
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY)
-                    .getResourceManager()
-                    .deleteFlight(rmTransId, flightNum);
+            if(result) {
+                // make sure to delete from reservations
+                Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteFlight(flightNum);
+                this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                    for(int customerId: affectedCustomers) {
+                        middlewareCustomerDatabase.addReservedFlight(customerId, flightNum);
+                    }
+                });
+            }
+
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return false;
@@ -183,20 +270,30 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean deleteCars(int id, String location) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
-
-            // make sure to delete from reservations
-            Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteCar(location);
-            this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
-                for(int customerId: affectedCustomers) {
-                    middlewareCustomerDatabase.addReservedCar(customerId, "car-" + location);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.CARS_ONLY);
+            Boolean result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .deleteCars(transId.getValue(), location);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
                 }
-            });
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
-                    .getResourceManager()
-                    .deleteCars(rmTransId, location);
+            if(result) {
+                // make sure to delete from reservations
+                Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteCar(location);
+                this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                    for(int customerId: affectedCustomers) {
+                        middlewareCustomerDatabase.addReservedCar(customerId, "car-" + location);
+                    }
+                });
+            }
+
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return false;
@@ -207,20 +304,30 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean deleteRooms(int id, String location) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
-
-            // make sure to delete from reservations
-            Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteRoom(location);
-            this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
-                for(int customerId: affectedCustomers) {
-                    middlewareCustomerDatabase.addReservedRoom(customerId, location);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.ROOMS_ONLY);
+            Boolean result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .deleteRooms(transId.getValue(), location);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
                 }
-            });
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY)
-                    .getResourceManager()
-                    .deleteRooms(rmTransId, location);
+            if(result) {
+                // make sure to delete from reservations
+                Collection<Integer> affectedCustomers = MiddlewareCustomerDatabase.getInstance().deleteRoom(location);
+                this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
+                    for(int customerId: affectedCustomers) {
+                        middlewareCustomerDatabase.addReservedRoom(customerId, location);
+                    }
+                });
+            }
+
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return false;
@@ -231,33 +338,59 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean deleteCustomer(int id, int customer) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int otherTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.OTHERS);
-
-            AbstractRemoteResourceManager userRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS);
-            boolean deleteCustomerSuccess = userRmManager.getResourceManager().deleteCustomer(otherTransId, customer);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.OTHERS);
+            Boolean deleteCustomerSuccess = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    deleteCustomerSuccess = this.middleware.
+                            getRemoteResourceManagerForType(transId.getKey()).
+                            getResourceManager().
+                            deleteCustomer(transId.getValue(), customer);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
             if(deleteCustomerSuccess) {
                 CustomerReservations custReservations = MiddlewareCustomerDatabase.getInstance().getReservations(customer);
 
                 // give back rooms
-                int roomTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
-                AbstractRemoteResourceManager roomRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY);
-                for(String roomKey: custReservations.getBookedRooms()) {
-                    roomRmManager.getResourceManager().updateReservedQuantities(roomTransId, "room-" + roomKey, 1);
+                Collection<Map.Entry<ResourceManagerTypes, Integer>> roomTransIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.ROOMS_ONLY);
+                for(Map.Entry<ResourceManagerTypes, Integer> roomTransId: roomTransIds) {
+                    try {
+                        AbstractRemoteResourceManager roomRmManager = this.middleware.getRemoteResourceManagerForType(roomTransId.getKey());
+                        for(String roomKey: custReservations.getBookedRooms()) {
+                            roomRmManager.getResourceManager().updateReservedQuantities(roomTransId.getValue(), "room-" + roomKey, 1);
+                        }
+                    } catch (RemoteException e) {
+                        this.handleServerError(roomTransId.getKey());
+                    }
                 }
 
                 // give back cars
-                int carTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
-                AbstractRemoteResourceManager carRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY);
-                for(String carKey: custReservations.getBookedCars()) {
-                    carRmManager.getResourceManager().updateReservedQuantities(carTransId, "car-" + carKey, 1);
+                Collection<Map.Entry<ResourceManagerTypes, Integer>> carTransIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.CARS_ONLY);
+                for(Map.Entry<ResourceManagerTypes, Integer> carTransId: carTransIds) {
+                    try {
+                        AbstractRemoteResourceManager carRmManager = this.middleware.getRemoteResourceManagerForType(carTransId.getKey());
+                        for(String carKey: custReservations.getBookedCars()) {
+                            carRmManager.getResourceManager().updateReservedQuantities(carTransId.getValue(), "car-" + carKey, 1);
+                        }
+                    } catch (RemoteException e) {
+                        this.handleServerError(carTransId.getKey());
+                    }
                 }
 
                 // give back flights
-                int flightTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.FLIGHTS_ONLY);
-                AbstractRemoteResourceManager flightRmManager = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY);
-                for(Integer flightKey: custReservations.getBookedFlights()) {
-                    flightRmManager.getResourceManager().updateReservedQuantities(flightTransId, "flight-" + String.valueOf(flightKey), 1);
+                Collection<Map.Entry<ResourceManagerTypes, Integer>> flightTransIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.FLIGHTS_ONLY);
+                for(Map.Entry<ResourceManagerTypes, Integer> flightTransId: flightTransIds) {
+                    try {
+                        AbstractRemoteResourceManager flightRmManager = this.middleware.getRemoteResourceManagerForType(flightTransId.getKey());
+                        for(Integer flightKey: custReservations.getBookedFlights()) {
+                            flightRmManager.getResourceManager().updateReservedQuantities(flightTransId.getValue(), "flight-" + String.valueOf(flightKey), 1);
+                        }
+                    } catch (RemoteException e) {
+                        this.handleServerError(flightTransId.getKey());
+                    }
                 }
 
                 this.middleware.getTransactionManager().appendReservationUndoLog(id, middlewareCustomerDatabase -> {
@@ -277,12 +410,20 @@ public class MiddlewareInterface implements ResourceManager {
     public int queryFlight(int id, int flightNumber) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.FLIGHTS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.FLIGHTS_ONLY);
+            Integer result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .queryFlight(transId.getValue(), flightNumber);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY)
-                    .getResourceManager()
-                    .queryFlight(rmTransId, flightNumber);
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return -1;
@@ -293,12 +434,20 @@ public class MiddlewareInterface implements ResourceManager {
     public int queryCars(int id, String location) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.CARS_ONLY);
+            Integer result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .queryCars(transId.getValue(), location);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
-                    .getResourceManager()
-                    .queryCars(rmTransId, location);
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return -1;
@@ -309,12 +458,20 @@ public class MiddlewareInterface implements ResourceManager {
     public int queryRooms(int id, String location) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.ROOMS_ONLY);
+            Integer result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .queryRooms(transId.getValue(), location);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY)
-                    .getResourceManager()
-                    .queryRooms(rmTransId, location);
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return -1;
@@ -325,31 +482,34 @@ public class MiddlewareInterface implements ResourceManager {
     public String queryCustomerInfo(int id, int customer) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int otherTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.OTHERS);
-
-            String customerInfo = this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.OTHERS)
-                    .getResourceManager()
-                    .queryCustomerInfo(otherTransId, customer);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.OTHERS);
+            String customerInfo = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    customerInfo = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .queryCustomerInfo(transId.getValue(), customer);
+                }  catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
             CustomerReservations reservations = MiddlewareCustomerDatabase.getInstance().getReservations(customer);
 
             StringBuilder billBuilder = new StringBuilder();
-            int flightTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.FLIGHTS_ONLY);
             for(Integer flightId: reservations.getBookedFlights()) {
-                int flightPrice = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY).getResourceManager().queryFlightPrice(flightTransId, flightId);
+                int flightPrice = this.queryFlightPrice(id, flightId);
                 billBuilder.append(String.format("- flight-%d $ %d", flightId, flightPrice)).append("\n");
             }
 
-            int carTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
             for(String carLocation: reservations.getBookedCars()) {
-                int carPrice = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().queryCarsPrice(carTransId, carLocation);
+                int carPrice = this.queryCarsPrice(id, carLocation);
                 billBuilder.append(String.format("- car-%s $ %d", carLocation, carPrice)).append("\n");
             }
 
-            int roomTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
             for(String roomLocation: reservations.getBookedRooms()) {
-                int roomPrice = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY).getResourceManager().queryRoomsPrice(roomTransId, roomLocation);
+                int roomPrice = this.queryCarsPrice(id, roomLocation);
                 billBuilder.append(String.format("- room-%s $ %d", roomLocation, roomPrice)).append("\n");
             }
 
@@ -364,12 +524,20 @@ public class MiddlewareInterface implements ResourceManager {
     public int queryFlightPrice(int id, int flightNumber) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.FLIGHTS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.FLIGHTS_ONLY);
+            Integer result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .queryFlightPrice(transId.getValue(), flightNumber);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY)
-                    .getResourceManager()
-                    .queryFlightPrice(rmTransId, flightNumber);
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return -1;
@@ -380,12 +548,20 @@ public class MiddlewareInterface implements ResourceManager {
     public int queryCarsPrice(int id, String location) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.CARS_ONLY);
+            Integer result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .queryCarsPrice(transId.getValue(), location);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY)
-                    .getResourceManager()
-                    .queryCarsPrice(rmTransId, location);
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return -1;
@@ -396,12 +572,20 @@ public class MiddlewareInterface implements ResourceManager {
     public int queryRoomsPrice(int id, String location) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.ROOMS_ONLY);
+            Integer result = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    result = this.middleware
+                            .getRemoteResourceManagerForType(transId.getKey())
+                            .getResourceManager()
+                            .queryRoomsPrice(transId.getValue(), location);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
-            return this.middleware
-                    .getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY)
-                    .getResourceManager()
-                    .queryRoomsPrice(rmTransId, location);
+            return result;
         } catch (TransactionException e) {
             this.handleTransactionException(id, e);
             return -1;
@@ -412,10 +596,18 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean reserveFlight(int id, int customer, int flightNumber) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.FLIGHTS_ONLY);
-
-            String flightKey = "flight-" + flightNumber;
-            boolean reserveFlightSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.FLIGHTS_ONLY).getResourceManager().updateReservedQuantities(rmTransId, flightKey, -1);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.FLIGHTS_ONLY);
+            Boolean reserveFlightSuccess = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    reserveFlightSuccess = this.middleware.
+                            getRemoteResourceManagerForType(transId.getKey()).
+                            getResourceManager().
+                            updateReservedQuantities(transId.getValue(), "flight-" + flightNumber, -1);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
             if(reserveFlightSuccess) {
                 MiddlewareCustomerDatabase.getInstance().addReservedFlight(customer, flightNumber);
@@ -435,10 +627,18 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean reserveCar(int id, int customer, String location) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.CARS_ONLY);
-
-            String carKey = "car-" + location;
-            boolean reserveCarSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.CARS_ONLY).getResourceManager().updateReservedQuantities(rmTransId, carKey, -1);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.CARS_ONLY);
+            Boolean reserveCarSuccess = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    reserveCarSuccess = this.middleware.
+                            getRemoteResourceManagerForType(transId.getKey()).
+                            getResourceManager().
+                            updateReservedQuantities(transId.getValue(), "car-" + location, -1);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
             if(reserveCarSuccess) {
                 MiddlewareCustomerDatabase.getInstance().addReservedCar(customer, location);
@@ -458,10 +658,18 @@ public class MiddlewareInterface implements ResourceManager {
     public boolean reserveRoom(int id, int customer, String locationd) throws RemoteException {
         try {
             this.middleware.getTransactionManager().ensureTransactionExists(id);
-            int rmTransId = this.middleware.getTransactionManager().enlistResourceManager(id, ResourceManagerTypes.ROOMS_ONLY);
-
-            String roomKey = "room-" + locationd;
-            boolean reserveRoomSuccess = this.middleware.getRemoteResourceManagerForType(ResourceManagerTypes.ROOMS_ONLY).getResourceManager().updateReservedQuantities(rmTransId, roomKey, -1);
+            Collection<Map.Entry<ResourceManagerTypes, Integer>> transactionIds = this.getReplicationTransactionIds(id, ResourceManagerTypes.ROOMS_ONLY);
+            Boolean reserveRoomSuccess = null;
+            for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+                try {
+                    reserveRoomSuccess = this.middleware.
+                            getRemoteResourceManagerForType(transId.getKey()).
+                            getResourceManager().
+                            updateReservedQuantities(transId.getValue(), "room-" + locationd, -1);
+                } catch (RemoteException e) {
+                    this.handleServerError(transId.getKey());
+                }
+            }
 
             if(reserveRoomSuccess) {
                 MiddlewareCustomerDatabase.getInstance().addReservedRoom(customer, locationd);

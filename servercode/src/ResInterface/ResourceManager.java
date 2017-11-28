@@ -1,6 +1,7 @@
 package ResInterface;
 
 
+import ResImpl.ResourceManagerDatabase;
 import ResImpl.exceptions.TransactionException;
 
 import java.rmi.Remote;
@@ -140,4 +141,5 @@ public interface ResourceManager extends Remote
     public boolean commitTransaction(int transId) throws RemoteException, TransactionException;
     public boolean abortTransaction(int transId) throws RemoteException, TransactionException;
     public boolean shutdown() throws RemoteException;
+
 }

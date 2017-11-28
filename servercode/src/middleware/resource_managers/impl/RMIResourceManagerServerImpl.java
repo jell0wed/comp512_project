@@ -28,6 +28,8 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
     private Registry RMIRegistry;
     private ResourceManager proxyRMIInterface;
 
+    private boolean isAlive = true;
+
     public RMIResourceManagerServerImpl(String rmAddress) {
         super(RemoteResourceManagerImplementationTypes.RMI);
 
@@ -74,6 +76,8 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
             System.gc(); // ignore
         }
     }
+
+
 
     public static void main(String[] args) {
         ReferenceMap map = new ReferenceMap(AbstractReferenceMap.ReferenceStrength.WEAK, AbstractReferenceMap.ReferenceStrength.WEAK);

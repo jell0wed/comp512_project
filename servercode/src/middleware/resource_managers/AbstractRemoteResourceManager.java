@@ -8,10 +8,19 @@ import ResInterface.ResourceManager;
  */
 public abstract class AbstractRemoteResourceManager {
     protected final RemoteResourceManagerImplementationTypes resourceManagerType;
+    protected boolean isAlive = true;
 
     protected AbstractRemoteResourceManager(RemoteResourceManagerImplementationTypes type) {
         this.resourceManagerType = type;
     }
 
     public abstract ResourceManager getResourceManager();
+
+    public void setIsAliveStatus(boolean alive) {
+        this.isAlive = alive;
+    }
+
+    public boolean isAlive() {
+        return this.isAlive;
+    }
 }

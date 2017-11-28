@@ -23,8 +23,8 @@ public class ResourceManagerRMIImpl implements ResourceManager {
     protected ResourceManagerDatabase rmDb;
     private TransactionManager transManager = new TransactionManager();
 
-    private static final File masterRecordFile = new File("master.bin");
-    private static final File shadowRecordFile = new File("shadow.bin");
+    private static File masterRecordFile;
+    private static File shadowRecordFile;
 
     public static void main(String args[]) {
         // Figure out where server is running
@@ -41,6 +41,9 @@ public class ResourceManagerRMIImpl implements ResourceManager {
             System.out.println("Usage: java src.ResImpl.ResourceManagerRMIImpl [port]");
             System.exit(1);
         }
+
+        masterRecordFile = new File("master_" + resourceManager + ".bin");
+        shadowRecordFile = new File("shadow_" + resourceManager + ".bin");
 
         try {
             // create a new Server object
@@ -68,8 +71,10 @@ public class ResourceManagerRMIImpl implements ResourceManager {
         this.rmDb = new ResourceManagerDatabase(this.transManager);
 
         if(masterRecordFile.exists()) {
+            Trace.info("Loaded master record file " + masterRecordFile.getPath());
             this.rmDb.loadFromFile(masterRecordFile);
         } else {
+            Trace.info("Created master record file " + masterRecordFile.getPath());
             this.rmDb.dumpToFile(masterRecordFile);
         }
     }
