@@ -298,17 +298,9 @@ public class ResourceManagerRMIImpl implements ResourceManager {
         try {
             this.transManager.commitTransaction(transId);
 
-            // first write to shadow copy (may be more than 1 IO)
-            this.rmDb.dumpToFile(shadowRecordFile);
-            // points the master to the shadow
-            Files.copy(shadowRecordFile.toPath(), masterRecordFile.toPath());
 
             return true;
         } catch (TransactionException e) {
-            return false;
-        } catch (IOException e) {
-            Trace.error("IOException while dumping files " + e.getMessage());
-            System.exit(1);
             return false;
         }
     }
@@ -317,9 +309,6 @@ public class ResourceManagerRMIImpl implements ResourceManager {
     public boolean abortTransaction(int transId) {
         try {
             this.transManager.abortTransaction(transId, this.rmDb);
-
-            // TODO : do we really need to read A into main memory?
-            this.rmDb.loadFromFile(masterRecordFile);
 
             return true;
         } catch (TransactionException e) {

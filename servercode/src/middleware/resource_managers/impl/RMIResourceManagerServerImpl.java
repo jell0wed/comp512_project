@@ -28,8 +28,6 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
     private Registry RMIRegistry;
     private ResourceManager proxyRMIInterface;
 
-    private boolean isAlive = true;
-
     public RMIResourceManagerServerImpl(String rmAddress) {
         super(RemoteResourceManagerImplementationTypes.RMI);
 

@@ -86,6 +86,10 @@ public class MiddlewareInterface implements ResourceManager {
             throw new RuntimeException("No alive transaction manager for this type.");
         }
 
+        for(Map.Entry<ResourceManagerTypes, Integer> transId: transactionIds) {
+            Trace.info("TransactionType = " + transId.getKey().toString() + ", TransactionId = " + transId.getValue());
+        }
+
         return transactionIds;
     }
 

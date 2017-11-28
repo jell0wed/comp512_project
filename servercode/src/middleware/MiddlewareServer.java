@@ -1,13 +1,11 @@
 package middleware;
 
+import ResImpl.Trace;
 import middleware.exceptions.MiddlewareBaseException;
 import middleware.resource_managers.*;
 import middleware.transactions.DistributedTransactionManager;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Created by jpoisson on 2017-09-28.
@@ -38,6 +36,7 @@ public abstract class MiddlewareServer {
 
         LinkedList<String> rmStrs = new LinkedList<>();
         this.availableRMs.forEach(rmStrs::push);
+        Collections.reverse(rmStrs);
 
         if(rmStrs.size() < 4) {
             throw new MiddlewareBaseException("Not enough RM servers.");
@@ -63,6 +62,7 @@ public abstract class MiddlewareServer {
         }
 
         AbstractRemoteResourceManager rm = this.remoteResourceManagers.get(type);
+        Trace.info("Marking " + type.toString() + " as defective.");
         rm.setIsAliveStatus(false);
         this.remoteResourceManagers.put(type, rm);
     }
