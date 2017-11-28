@@ -9,6 +9,10 @@ import ResInterface.ResourceManager;
 import ResImpl.exceptions.TransactionException;
 import transactions.LockManager.LockManager;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -19,6 +23,8 @@ public class ResourceManagerRMIImpl implements ResourceManager {
     protected ResourceManagerDatabase rmDb;
     private TransactionManager transManager = new TransactionManager();
 
+    private static final File masterRecordFile = new File("master.bin");
+    private static final File shadowRecordFile = new File("shadow.bin");
 
     public static void main(String args[]) {
         // Figure out where server is running
@@ -60,6 +66,12 @@ public class ResourceManagerRMIImpl implements ResourceManager {
      
     public ResourceManagerRMIImpl() throws RemoteException {
         this.rmDb = new ResourceManagerDatabase(this.transManager);
+
+        if(masterRecordFile.exists()) {
+            this.rmDb.loadFromFile(masterRecordFile);
+        } else {
+            this.rmDb.dumpToFile(masterRecordFile);
+        }
     }
 
     private void handleTransactionException(int transId, TransactionException e) throws TransactionException {
@@ -280,8 +292,18 @@ public class ResourceManagerRMIImpl implements ResourceManager {
     public boolean commitTransaction(int transId) {
         try {
             this.transManager.commitTransaction(transId);
+
+            // first write to shadow copy (may be more than 1 IO)
+            this.rmDb.dumpToFile(shadowRecordFile);
+            // points the master to the shadow
+            Files.copy(shadowRecordFile.toPath(), masterRecordFile.toPath());
+
             return true;
         } catch (TransactionException e) {
+            return false;
+        } catch (IOException e) {
+            Trace.error("IOException while dumping files " + e.getMessage());
+            System.exit(1);
             return false;
         }
     }
@@ -290,6 +312,10 @@ public class ResourceManagerRMIImpl implements ResourceManager {
     public boolean abortTransaction(int transId) {
         try {
             this.transManager.abortTransaction(transId, this.rmDb);
+
+            // TODO : do we really need to read A into main memory?
+            this.rmDb.loadFromFile(masterRecordFile);
+
             return true;
         } catch (TransactionException e) {
             return false;

@@ -4,6 +4,7 @@ import ResImpl.exceptions.TransactionException;
 import ResImpl.exceptions.TransactionException;
 import transactions.LockManager.LockManager;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -15,6 +16,38 @@ public class ResourceManagerDatabase {
 
     ResourceManagerDatabase(TransactionManager transManager) {
         this.transManager = transManager;
+    }
+
+    public void dumpToFile(File file) {
+        FileOutputStream fout = null;
+        ObjectOutputStream oos = null;
+        try {
+            fout = new FileOutputStream(file);
+            oos = new ObjectOutputStream(fout);
+
+            oos.writeObject(this.m_itemHT);
+
+            oos.close();
+            fout.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to dump database to file");
+        }
+    }
+
+    public void loadFromFile(File file) {
+        FileInputStream fis;
+        ObjectInputStream ois;
+        try {
+            fis = new FileInputStream(file);
+            ois = new ObjectInputStream(fis);
+
+            this.m_itemHT = (RMHashtable) ois.readObject();
+
+            fis.close();
+            ois.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to load database from file");
+        }
     }
 
     // Reads a data item
