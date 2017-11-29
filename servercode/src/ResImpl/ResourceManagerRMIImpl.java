@@ -7,24 +7,20 @@ package ResImpl;
 import ResImpl.exceptions.DeadlockException;
 import ResInterface.ResourceManager;
 import ResImpl.exceptions.TransactionException;
-import transactions.LockManager.LockManager;
+import middleware.database.ICustomerDatabase;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class ResourceManagerRMIImpl implements ResourceManager {
     protected ResourceManagerDatabase rmDb;
-    private TransactionManager transManager = new TransactionManager();
 
-    private static File masterRecordFile;
-    private static File shadowRecordFile;
+    private TransactionManager transManager = new TransactionManager();
 
     public static void main(String args[]) {
         // Figure out where server is running
@@ -41,9 +37,6 @@ public class ResourceManagerRMIImpl implements ResourceManager {
             System.out.println("Usage: java src.ResImpl.ResourceManagerRMIImpl [port]");
             System.exit(1);
         }
-
-        masterRecordFile = new File("master_" + resourceManager + ".bin");
-        shadowRecordFile = new File("shadow_" + resourceManager + ".bin");
 
         try {
             // create a new Server object
@@ -69,14 +62,6 @@ public class ResourceManagerRMIImpl implements ResourceManager {
      
     public ResourceManagerRMIImpl() throws RemoteException {
         this.rmDb = new ResourceManagerDatabase(this.transManager);
-
-        if(masterRecordFile.exists()) {
-            Trace.info("Loaded master record file " + masterRecordFile.getPath());
-            this.rmDb.loadFromFile(masterRecordFile);
-        } else {
-            Trace.info("Created master record file " + masterRecordFile.getPath());
-            this.rmDb.dumpToFile(masterRecordFile);
-        }
     }
 
     private void handleTransactionException(int transId, TransactionException e) throws TransactionException {
@@ -320,6 +305,16 @@ public class ResourceManagerRMIImpl implements ResourceManager {
     public boolean shutdown() throws RemoteException {
         System.exit(0);
         return true;
+    }
+
+    @Override
+    public void registerAsMiddlewareBackup(String connectStr) throws RemoteException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void executeReservationOperation(Consumer<ICustomerDatabase> dbOp) throws RemoteException {
+        throw new NotImplementedException();
     }
 
 

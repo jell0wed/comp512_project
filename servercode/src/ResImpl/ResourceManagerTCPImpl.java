@@ -2,9 +2,11 @@ package ResImpl;
 
 import ResImpl.exceptions.RMBaseException;
 import ResInterface.ResourceManager;
+import middleware.database.ICustomerDatabase;
 import protocol.requests.BaseTCPRequest;
 import protocol.responses.BaseTCPResponse;
 import ResImpl.exceptions.TransactionException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import transactions.LockManager.LockManager;
 
 import java.io.*;
@@ -13,6 +15,7 @@ import java.net.Socket;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Vector;
+import java.util.function.Consumer;
 
 /**
  * Created by jpoisson on 2017-10-05.
@@ -294,5 +297,15 @@ public class ResourceManagerTCPImpl implements ResourceManager, Remote {
     public boolean shutdown() throws RemoteException {
         System.exit(0);
         return true;
+    }
+
+    @Override
+    public void registerAsMiddlewareBackup(String connectStr) throws RemoteException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void executeReservationOperation(Consumer<ICustomerDatabase> dbOp) throws RemoteException {
+        throw new NotImplementedException();
     }
 }

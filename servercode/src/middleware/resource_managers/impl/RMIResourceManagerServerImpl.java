@@ -7,6 +7,7 @@ import middleware.resource_managers.AbstractRemoteResourceManager;
 import middleware.resource_managers.RemoteResourceManagerImplementationTypes;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceMap;
+import utils.RMIStringUtils;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -19,8 +20,6 @@ import java.util.regex.Pattern;
  * Created by jpoisson on 2017-09-25.
  */
 public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager {
-    private static final Pattern RMI_URL_PATTERN = Pattern.compile("^\\/\\/([^:]+):([0-9]+)\\/(.*)$");
-
     private String registryHostname;
     private Integer registryPort;
     private String resourceManagerKey;
@@ -49,7 +48,7 @@ public class RMIResourceManagerServerImpl extends AbstractRemoteResourceManager 
     }
 
     private void parseRMAddress(String rmAddress) {
-        Matcher rmAddressMatch = RMI_URL_PATTERN.matcher(rmAddress);
+        Matcher rmAddressMatch = RMIStringUtils.RMI_URL_PATTERN.matcher(rmAddress);
         if(!rmAddressMatch.matches()) {
             throw new MiddlewareBaseException("Malformed RMI RMAddress " + rmAddress);
         }

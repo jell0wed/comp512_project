@@ -1,6 +1,6 @@
 package middleware.transactions;
 
-import middleware.MiddlewareCustomerDatabase;
+import middleware.database.ICustomerDatabase;
 import middleware.resource_managers.ResourceManagerTypes;
 
 import java.util.Hashtable;
@@ -11,5 +11,5 @@ import java.util.function.Consumer;
 class DistributedTransaction {
     Map<ResourceManagerTypes, Integer> enlistedRms = new Hashtable<>();
     Debouncer<Integer> timeToLive = null;
-    Stack<Consumer<MiddlewareCustomerDatabase>> reservationUndoLogs = new Stack<>();
+    Stack<Consumer<ICustomerDatabase>> reservationUndoLogs = new Stack<>();
 }

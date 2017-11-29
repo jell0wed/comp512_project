@@ -1,4 +1,4 @@
-package middleware;
+package middleware.database;
 
 import middleware.entities.CustomerReservations;
 
@@ -6,25 +6,8 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
-/**
- * Created by jpoisson on 2017-09-27.
- */
-public class MiddlewareCustomerDatabase {
-    private static MiddlewareCustomerDatabase instance = null;
-
-    public static MiddlewareCustomerDatabase getInstance() {
-        if(instance == null) {
-            instance = new MiddlewareCustomerDatabase();
-        }
-
-        return instance;
-    }
-
+public class MemoryCustomerDatabase  implements ICustomerDatabase {
     private Hashtable<Integer, CustomerReservations> customerReservations = new Hashtable<>();
-
-    private MiddlewareCustomerDatabase() {
-
-    }
 
     public synchronized void createCustomer(int customerId) {
         this.customerReservations.put(customerId, new CustomerReservations());
@@ -113,6 +96,5 @@ public class MiddlewareCustomerDatabase {
         CustomerReservations reservations = this.customerReservations.get(cid);
         return reservations.removeRoom(location);
     }
-
 
 }

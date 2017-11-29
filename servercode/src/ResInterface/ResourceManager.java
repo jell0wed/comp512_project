@@ -3,11 +3,14 @@ package ResInterface;
 
 import ResImpl.ResourceManagerDatabase;
 import ResImpl.exceptions.TransactionException;
+import middleware.database.ICustomerDatabase;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Vector;
-/** 
+import java.util.function.Consumer;
+
+/**
  * Simplified version from CSE 593 Univ. of Washington
  *
  * Distributed  System in Java.
@@ -141,5 +144,8 @@ public interface ResourceManager extends Remote
     public boolean commitTransaction(int transId) throws RemoteException, TransactionException;
     public boolean abortTransaction(int transId) throws RemoteException, TransactionException;
     public boolean shutdown() throws RemoteException;
+
+    public void registerAsMiddlewareBackup(String connectStr) throws RemoteException;
+    public void executeReservationOperation(Consumer<ICustomerDatabase> dbOp) throws RemoteException;
 
 }

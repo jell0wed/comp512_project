@@ -5,7 +5,7 @@ import ResImpl.exceptions.AbortedTransactionException;
 import ResImpl.exceptions.InvalidTransactionException;
 import ResImpl.exceptions.TransactionException;
 import ResInterface.ResourceManager;
-import middleware.MiddlewareCustomerDatabase;
+import middleware.database.ICustomerDatabase;
 import middleware.MiddlewareServer;
 import middleware.resource_managers.ResourceManagerTypes;
 
@@ -84,8 +84,8 @@ public class DistributedTransactionManager {
 
         // undo reservation stuff
         while(!distTrans.reservationUndoLogs.isEmpty()) {
-            Consumer<MiddlewareCustomerDatabase> undoFn = distTrans.reservationUndoLogs.pop();
-            undoFn.accept(MiddlewareCustomerDatabase.getInstance());
+            Consumer<ICustomerDatabase> undoFn = distTrans.reservationUndoLogs.pop();
+            undoFn.accept(this.middleware.getMiddlewareDatabase());
         }
 
         // abort at each rms
@@ -131,7 +131,7 @@ public class DistributedTransactionManager {
         return rmTransId;
     }
 
-    public synchronized void appendReservationUndoLog(int transId, Consumer<MiddlewareCustomerDatabase> undoFn) throws InvalidTransactionException {
+    public synchronized void appendReservationUndoLog(int transId, Consumer<ICustomerDatabase> undoFn) throws InvalidTransactionException {
         if(!transactionExists(transId)) {
             throw new InvalidTransactionException("Transaction does not exists.");
         }
