@@ -8,6 +8,8 @@ import middleware.database.ReplicatedCustomerDatabase;
 import middleware.exceptions.MiddlewareBaseException;
 import middleware.resource_managers.*;
 import middleware.transactions.DistributedTransactionManager;
+import middleware.transactions.IDistributedTransactionManager;
+import middleware.transactions.ReplicatedTransactionManager;
 import utils.RMIStringUtils;
 
 import java.rmi.NotBoundException;
@@ -26,7 +28,7 @@ public abstract class MiddlewareServer {
     private Collection<String> availableRMs;
     private Hashtable<ResourceManagerTypes, AbstractRemoteResourceManager> remoteResourceManagers;
     private MiddlewareInterface middlewareInterface;
-    private DistributedTransactionManager transactionMananger;
+    private IDistributedTransactionManager transactionMananger;
     private ICustomerDatabase middlewareDatabase;
 
     protected abstract void initializeServer();
@@ -79,7 +81,7 @@ public abstract class MiddlewareServer {
         this.remoteResourceManagers.put(type, rm);
     }
 
-    protected DistributedTransactionManager getTransactionManager() {
+    protected IDistributedTransactionManager getTransactionManager() {
         return this.transactionMananger;
     }
 
@@ -107,7 +109,10 @@ public abstract class MiddlewareServer {
         try {
             Registry registry = LocateRegistry.getRegistry(hostname, port);
             ResourceManager backupMiddleware = (ResourceManager) registry.lookup(key);
+
             this.middlewareDatabase = new ReplicatedCustomerDatabase(this.middlewareDatabase, backupMiddleware);
+            this.transactionMananger = new ReplicatedTransactionManager(this.transactionMananger, backupMiddleware);
+
             Trace.info("Registered backup middleware from " + connStr);
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);

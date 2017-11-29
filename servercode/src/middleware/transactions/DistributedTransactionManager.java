@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class DistributedTransactionManager {
+public class DistributedTransactionManager implements IDistributedTransactionManager {
     private volatile int transactionCounter = 0;
     private Map<Integer, DistributedTransaction> openTransactions = new Hashtable<Integer, DistributedTransaction>();
     private Set<Integer> abortedTransactions = new HashSet<Integer>();

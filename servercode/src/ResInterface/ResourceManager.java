@@ -4,6 +4,8 @@ package ResInterface;
 import ResImpl.ResourceManagerDatabase;
 import ResImpl.exceptions.TransactionException;
 import middleware.database.ICustomerDatabase;
+import middleware.transactions.DistributedTransactionManager;
+import middleware.transactions.IDistributedTransactionManager;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -147,5 +149,6 @@ public interface ResourceManager extends Remote
 
     public void registerAsMiddlewareBackup(String connectStr) throws RemoteException;
     public void executeReservationOperation(Consumer<ICustomerDatabase> dbOp) throws RemoteException;
+    public void executeTransactionOperation(Consumer<IDistributedTransactionManager> transOp) throws RemoteException;
 
 }

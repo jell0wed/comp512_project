@@ -3,6 +3,7 @@ package ResImpl;
 import ResImpl.exceptions.RMBaseException;
 import ResInterface.ResourceManager;
 import middleware.database.ICustomerDatabase;
+import middleware.transactions.IDistributedTransactionManager;
 import protocol.requests.BaseTCPRequest;
 import protocol.responses.BaseTCPResponse;
 import ResImpl.exceptions.TransactionException;
@@ -306,6 +307,11 @@ public class ResourceManagerTCPImpl implements ResourceManager, Remote {
 
     @Override
     public void executeReservationOperation(Consumer<ICustomerDatabase> dbOp) throws RemoteException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void executeTransactionOperation(Consumer<IDistributedTransactionManager> transOp) throws RemoteException {
         throw new NotImplementedException();
     }
 }

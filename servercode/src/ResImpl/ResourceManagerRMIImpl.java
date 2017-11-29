@@ -8,6 +8,7 @@ import ResImpl.exceptions.DeadlockException;
 import ResInterface.ResourceManager;
 import ResImpl.exceptions.TransactionException;
 import middleware.database.ICustomerDatabase;
+import middleware.transactions.IDistributedTransactionManager;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.rmi.RemoteException;
@@ -314,6 +315,11 @@ public class ResourceManagerRMIImpl implements ResourceManager {
 
     @Override
     public void executeReservationOperation(Consumer<ICustomerDatabase> dbOp) throws RemoteException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void executeTransactionOperation(Consumer<IDistributedTransactionManager> transOp) throws RemoteException {
         throw new NotImplementedException();
     }
 
