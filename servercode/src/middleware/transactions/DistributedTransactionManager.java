@@ -131,6 +131,21 @@ public class DistributedTransactionManager implements IDistributedTransactionMan
         return rmTransId;
     }
 
+    @Override
+    public int enlistAlreadyEnlistedResourceManager(int transId, ResourceManagerTypes rmType, int rmTransId) throws TransactionException {
+        if(!transactionExists(transId)) {
+            throw new InvalidTransactionException("Transaction does not exists.");
+        }
+
+        // make sure a transaction has been initialized for rmType
+        DistributedTransaction distTrans = this.openTransactions.get(transId);
+        distTrans.timeToLive.call(0);
+        distTrans.enlistedRms.put(rmType, rmTransId);
+
+        // return appropriate transaction id
+        return rmTransId;
+    }
+
     public synchronized void appendReservationUndoLog(int transId, Consumer<ICustomerDatabase> undoFn) throws InvalidTransactionException {
         if(!transactionExists(transId)) {
             throw new InvalidTransactionException("Transaction does not exists.");

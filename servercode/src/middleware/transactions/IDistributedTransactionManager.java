@@ -13,6 +13,7 @@ public interface IDistributedTransactionManager {
     public void commitTransaction(int transId) throws InvalidTransactionException, AbortedTransactionException;
     public void abortTransaction(int transId) throws InvalidTransactionException;
     public int enlistResourceManager(int transId, ResourceManagerTypes rmType) throws TransactionException;
+    public int enlistAlreadyEnlistedResourceManager(int transId, ResourceManagerTypes rmType, int rmTransId) throws TransactionException;
     public void appendReservationUndoLog(int transId, Consumer<ICustomerDatabase> undoFn) throws InvalidTransactionException;
     public void ensureTransactionExists(int transId) throws InvalidTransactionException;
 }

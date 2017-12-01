@@ -73,7 +73,24 @@ public class ReplicatedTransactionManager implements IDistributedTransactionMana
         try {
             this.backupMiddleware.executeTransactionOperation((Consumer<IDistributedTransactionManager>&Serializable) tMgr -> {
                 try {
-                    tMgr.enlistResourceManager(transId, rmType);
+                    tMgr.enlistAlreadyEnlistedResourceManager(transId, rmType, result);
+                } catch (TransactionException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (RemoteException e) {
+            Trace.error("Error while executing transaction operation remotely");
+        }
+        return result;
+    }
+
+    @Override
+    public int enlistAlreadyEnlistedResourceManager(int transId, ResourceManagerTypes rmType, int rmTransId) throws TransactionException {
+        int result = this.localTransactionManager.enlistAlreadyEnlistedResourceManager(transId, rmType, rmTransId);
+        try {
+            this.backupMiddleware.executeTransactionOperation((Consumer<IDistributedTransactionManager>&Serializable) tMgr -> {
+                try {
+                    tMgr.enlistAlreadyEnlistedResourceManager(transId, rmType, rmTransId);
                 } catch (TransactionException e) {
                     e.printStackTrace();
                 }

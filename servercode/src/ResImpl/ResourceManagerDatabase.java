@@ -65,8 +65,9 @@ public class ResourceManagerDatabase {
                 rmDb.m_itemHT.remove(key);
             });
         } else {
+            final RMItem before = beforeImage.makeACopy();
             this.transManager.appendUndoLog(id, rmDb -> {
-                rmDb.m_itemHT.put(key, beforeImage.makeACopy());
+                rmDb.m_itemHT.put(key, before);
             });
         }
 
